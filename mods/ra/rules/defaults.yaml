@@ -169,15 +169,6 @@
 		ValidTargets: Infantry, Vehicle, Tank, Water, Underwater, Structure, Defense
 		InvalidTargets: NoAutoTarget
 
-^AutoTargetGroundAssaultMove:
-	Inherits: ^AutoTargetGround
-	AutoTargetPriority@DEFAULT:
-		RequiresCondition: !stance-attackanything && !assault-move
-	AutoTargetPriority@ATTACKANYTHING:
-		RequiresCondition: stance-attackanything || assault-move
-	AttackMove:
-		AssaultMoveScanCondition: assault-move
-
 ^AutoTargetAir:
 	AutoTarget:
 	AutoTargetPriority@DEFAULT:
@@ -195,15 +186,6 @@
 		RequiresCondition: stance-attackanything
 		ValidTargets: Infantry, Vehicle, Tank, Water, Underwater, Air, Structure, Defense
 		InvalidTargets: NoAutoTarget
-
-^AutoTargetAllAssaultMove:
-	Inherits: ^AutoTargetAll
-	AutoTargetPriority@DEFAULT:
-		RequiresCondition: !stance-attackanything && !assault-move
-	AutoTargetPriority@ATTACKANYTHING:
-		RequiresCondition: stance-attackanything || assault-move
-	AttackMove:
-		AssaultMoveScanCondition: assault-move
 
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
@@ -440,7 +422,7 @@
 		Categories: Civilian infantry
 
 ^ArmedCivilian:
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Armament:
 		Weapon: Pistol
 	AttackFrontal:
