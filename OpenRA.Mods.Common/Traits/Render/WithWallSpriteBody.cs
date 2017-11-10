@@ -155,7 +155,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 				aat.SetDirty();
 		}
 
-		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
+		public void RemovedFromWorld(Actor self)
 		{
 			UpdateNeighbours(self);
 		}

@@ -88,7 +88,6 @@ namespace OpenRA.Mods.Common.Traits
 		readonly World world;
 
 		TerrainSpriteLayer render;
-		bool disposed;
 
 		public SmudgeLayer(Actor self, SmudgeLayerInfo info)
 		{
@@ -181,7 +180,7 @@ namespace OpenRA.Mods.Common.Traits
 			dirty[loc] = tile;
 		}
 
-		void ITickRender.TickRender(WorldRenderer wr, Actor self)
+		public void TickRender(WorldRenderer wr, Actor self)
 		{
 			var remove = new List<CPos>();
 			foreach (var kv in dirty)
@@ -203,12 +202,13 @@ namespace OpenRA.Mods.Common.Traits
 				dirty.Remove(r);
 		}
 
-		void IRenderOverlay.Render(WorldRenderer wr)
+		public void Render(WorldRenderer wr)
 		{
 			render.Draw(wr.Viewport);
 		}
 
-		void INotifyActorDisposing.Disposing(Actor self)
+		bool disposed;
+		public void Disposing(Actor self)
 		{
 			if (disposed)
 				return;

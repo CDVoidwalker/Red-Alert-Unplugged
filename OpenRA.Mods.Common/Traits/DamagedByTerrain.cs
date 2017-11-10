@@ -52,7 +52,7 @@ namespace OpenRA.Mods.Common.Traits
 			health = self.Trait<Health>();
 		}
 
-		void INotifyAddedToWorld.AddedToWorld(Actor self)
+		public void AddedToWorld(Actor self)
 		{
 			if (!Info.StartOnThreshold)
 				return;
@@ -77,7 +77,7 @@ namespace OpenRA.Mods.Common.Traits
 				self.InflictDamage(self.World.WorldActor, new Damage(delta, Info.DamageTypes));
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (IsTraitDisabled || health.HP <= damageThreshold || --damageTicks > 0)
 				return;

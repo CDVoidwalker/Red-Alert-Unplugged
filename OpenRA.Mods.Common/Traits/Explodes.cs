@@ -50,23 +50,8 @@ namespace OpenRA.Mods.Common.Traits
 		public override object Create(ActorInitializer init) { return new Explodes(this, init.Self); }
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
-			if (!string.IsNullOrEmpty(Weapon))
-			{
-				WeaponInfo weapon;
-				var weaponToLower = Weapon.ToLowerInvariant();
-				if (!rules.Weapons.TryGetValue(weaponToLower, out weapon))
-					throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(weaponToLower));
-				WeaponInfo = weapon;
-			}
-
-			if (!string.IsNullOrEmpty(EmptyWeapon))
-			{
-				WeaponInfo emptyWeapon;
-				var emptyWeaponToLower = EmptyWeapon.ToLowerInvariant();
-				if (!rules.Weapons.TryGetValue(emptyWeaponToLower, out emptyWeapon))
-					throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(emptyWeaponToLower));
-				EmptyWeaponInfo = emptyWeapon;
-			}
+			WeaponInfo = string.IsNullOrEmpty(Weapon) ? null : rules.Weapons[Weapon.ToLowerInvariant()];
+			EmptyWeaponInfo = string.IsNullOrEmpty(EmptyWeapon) ? null : rules.Weapons[EmptyWeapon.ToLowerInvariant()];
 
 			base.RulesetLoaded(rules, ai);
 		}

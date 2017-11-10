@@ -21,11 +21,9 @@ namespace OpenRA.Mods.Common.Activities
 		readonly Health health;
 		readonly SellableInfo sellableInfo;
 		readonly PlayerResources playerResources;
-		bool showTicks;
 
-		public Sell(Actor self, bool showTicks)
+		public Sell(Actor self)
 		{
-			this.showTicks = showTicks;
 			health = self.TraitOrDefault<Health>();
 			sellableInfo = self.Info.TraitInfo<SellableInfo>();
 			playerResources = self.Owner.PlayerActor.Trait<PlayerResources>();
@@ -42,7 +40,7 @@ namespace OpenRA.Mods.Common.Activities
 			foreach (var ns in self.TraitsImplementing<INotifySold>())
 				ns.Sold(self);
 
-			if (showTicks && refund > 0 && self.Owner.IsAlliedWith(self.World.RenderPlayer))
+			if (refund > 0 && self.Owner.IsAlliedWith(self.World.RenderPlayer))
 				self.World.AddFrameEndTask(w => w.Add(new FloatingText(self.CenterPosition, self.Owner.Color.RGB, FloatingText.FormatCashTick(refund), 30)));
 
 			self.Dispose();

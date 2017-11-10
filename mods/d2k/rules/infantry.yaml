@@ -97,19 +97,16 @@ thumper:
 		Range: 2c768
 	Mobile:
 		Speed: 43
-		RequiresCondition: undeployed
+		RequiresCondition: !deployed
 	GrantConditionOnDeploy:
 		DeployedCondition: deployed
-		UndeployedCondition: undeployed
 		Facing: 128
 		AllowedTerrainTypes: Sand, Spice, Dune, SpiceSand
 	WithInfantryBody:
-		RequiresCondition: undeployed
+		RequiresCondition: !deployed
 	WithSpriteBody@DEPLOYED:
 		Sequence: thump
-		RequiresCondition: !undeployed
-	WithMakeAnimation@DEPLOYING:
-		Sequence: deploy
+		RequiresCondition: deployed
 	WithIdleOverlay@DEPLOYED:
 		Sequence: thump-sand
 		RequiresCondition: deployed
@@ -155,6 +152,8 @@ fremen:
 		InitialDelay: 85
 		CloakDelay: 85
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Dock, Damage, Heal
+		CloakSound: STEALTH1.WAV
+		UncloakSound: STEALTH2.WAV
 		IsPlayerPalette: true
 		RequiresCondition: !cloak-force-disabled
 	GrantConditionOnDamageState@UNCLOAK:
@@ -253,6 +252,7 @@ saboteur:
 		InitialDelay: 85
 		CloakDelay: 85
 		CloakSound: STEALTH1.WAV
+		UncloakSound: STEALTH2.WAV
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Move, Damage, Heal
 		IsPlayerPalette: true
 		RequiresCondition: !cloak-force-disabled

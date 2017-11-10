@@ -58,7 +58,7 @@ namespace OpenRA.Mods.Common.Traits
 			checkForSuitableCell = checkLandingCell;
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			var wasInDropRange = inDropRange;
 			inDropRange = target.IsInRange(self.CenterPosition, info.DropRange);
@@ -96,7 +96,7 @@ namespace OpenRA.Mods.Common.Traits
 			return actorToDrop.Trait<IPositionable>().CanEnterCell(p);
 		}
 
-		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
+		public void RemovedFromWorld(Actor self)
 		{
 			OnRemovedFromWorld(self);
 		}

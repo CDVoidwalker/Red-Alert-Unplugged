@@ -10,7 +10,6 @@
 #endregion
 
 using System.Collections.Generic;
-using System.Drawing;
 using OpenRA.Activities;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Activities;
@@ -83,20 +82,8 @@ namespace OpenRA.Mods.Common.Traits
 	[RequireExplicitImplementation]
 	public interface INotifyDamageStateChanged { void DamageStateChanged(Actor self, AttackInfo e); }
 
-	public interface INotifyDamage { void Damaged(Actor self, AttackInfo e); }
-	public interface INotifyKilled { void Killed(Actor self, AttackInfo e); }
-	public interface INotifyAppliedDamage { void AppliedDamage(Actor self, Actor damaged, AttackInfo e); }
-
-	[RequireExplicitImplementation]
-	public interface INotifyRepair
-	{
-		void BeforeRepair(Actor self, Actor target);
-		void RepairTick(Actor self, Actor target);
-		void AfterRepair(Actor self, Actor target);
-	}
-
 	public interface INotifyBuildingPlaced { void BuildingPlaced(Actor self); }
-	public interface INotifyNuke { void Launching(Actor self); }
+	public interface INotifyRepair { void Repairing(Actor self, Actor target); }
 	public interface INotifyBurstComplete { void FiredBurst(Actor self, Target target, Armament a); }
 	public interface INotifyChat { bool OnChat(string from, string message); }
 	public interface INotifyProduction { void UnitProduced(Actor self, Actor other, CPos exit); }
@@ -108,11 +95,6 @@ namespace OpenRA.Mods.Common.Traits
 	public interface INotifyDiscovered { void OnDiscovered(Actor self, Player discoverer, bool playNotification); }
 	public interface IRenderActorPreviewInfo : ITraitInfo { IEnumerable<IActorPreview> RenderPreview(ActorPreviewInitializer init); }
 	public interface ICruiseAltitudeInfo : ITraitInfo { WDist GetCruiseAltitude(); }
-
-	public interface IExplodeModifier { bool ShouldExplode(Actor self); }
-	public interface IHuskModifier { string HuskActor(Actor self); }
-
-	public interface ISeedableResource { void Seed(Actor self); }
 
 	[RequireExplicitImplementation]
 	public interface INotifyInfiltrated { void Infiltrated(Actor self, Actor infiltrator); }
@@ -154,24 +136,6 @@ namespace OpenRA.Mods.Common.Traits
 		void Harvested(Actor self, ResourceType resource);
 		void Docked();
 		void Undocked();
-	}
-
-	[RequireExplicitImplementation]
-	public interface INotifyUnload
-	{
-		void Unloading(Actor self);
-	}
-
-	[RequireExplicitImplementation]
-	public interface INotifyDemolition
-	{
-		void Demolishing(Actor self);
-	}
-
-	[RequireExplicitImplementation]
-	public interface INotifyInfiltration
-	{
-		void Infiltrating(Actor self);
 	}
 
 	public interface ITechTreePrerequisiteInfo : ITraitInfo { }
@@ -329,60 +293,4 @@ namespace OpenRA.Mods.Common.Traits
 	{
 		IEnumerable<object> ActorPreviewInits(ActorInfo ai, ActorPreviewType type);
 	}
-
-	public interface IMoveInfo : ITraitInfoInterface { }
-
-	public interface IMove
-	{
-		Activity MoveTo(CPos cell, int nearEnough);
-		Activity MoveTo(CPos cell, Actor ignoreActor);
-		Activity MoveWithinRange(Target target, WDist range);
-		Activity MoveWithinRange(Target target, WDist minRange, WDist maxRange);
-		Activity MoveFollow(Actor self, Target target, WDist minRange, WDist maxRange);
-		Activity MoveIntoWorld(Actor self, CPos cell, SubCell subCell = SubCell.Any);
-		Activity MoveToTarget(Actor self, Target target);
-		Activity MoveIntoTarget(Actor self, Target target);
-		Activity VisualMove(Actor self, WPos fromPos, WPos toPos);
-		CPos NearestMoveableCell(CPos target);
-		bool IsMoving { get; set; }
-		bool IsMovingVertically { get; set; }
-		bool CanEnterTargetNow(Actor self, Target target);
-	}
-
-	public interface IRadarSignature
-	{
-		IEnumerable<Pair<CPos, Color>> RadarSignatureCells(Actor self);
-	}
-
-	public interface IRadarColorModifier { Color RadarColorOverride(Actor self, Color color); }
-
-	public interface IObjectivesPanel
-	{
-		string PanelName { get; }
-		int ExitDelay { get; }
-	}
-
-	public interface INotifyObjectivesUpdated
-	{
-		void OnPlayerWon(Player winner);
-		void OnPlayerLost(Player loser);
-		void OnObjectiveAdded(Player player, int objectiveID);
-		void OnObjectiveCompleted(Player player, int objectiveID);
-		void OnObjectiveFailed(Player player, int objectiveID);
-	}
-
-	public interface INotifyCashTransfer
-	{
-		void OnAcceptingCash(Actor self, Actor donor);
-		void OnDeliveringCash(Actor self, Actor acceptor);
-	}
-
-	[RequireExplicitImplementation]
-	public interface ITargetableCells
-	{
-		IEnumerable<Pair<CPos, SubCell>> TargetableCells();
-	}
-
-	[RequireExplicitImplementation]
-	public interface IPreventsShroudReset { bool PreventShroudReset(Actor self); }
 }

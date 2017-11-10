@@ -1,7 +1,5 @@
 World:
-	CrateSpawner:
-		Enabled: False
-		Locked: True
+	-CrateSpawner:
 	-SpawnMPUnits:
 	MapBuildRadius:
 		AllyBuildRadiusLocked: True
@@ -63,35 +61,14 @@ Player:
 	PlayerResources:
 		DefaultCashLocked: True
 		DefaultCash: 60
-	ChronoshiftPower:
-		Icon: chrono
-		ChargeTime: 60
-		Description: Chronoshift
-		LongDesc: Teleport a group of vehicles across\nthe map.
-		SelectTargetSound: slcttgt1.aud
-		BeginChargeSound: chrochr1.aud
-		EndChargeSound: chrordy1.aud
-		Duration: 999999
-		KillCargo: yes
-		Range: 3
-	GrantExternalConditionPower@IRONCURTAIN:
-		Icon: invuln
-		ChargeTime: 30
-		Description: Invulnerability
-		LongDesc: Makes a unit invulnerable\nfor 3 seconds.
-		Duration: 75
-		SelectTargetSound: slcttgt1.aud
-		BeginChargeSound: ironchg1.aud
-		EndChargeSound: ironrdy1.aud
-		Range: 1
-		Condition: invulnerability
-		Sequence: idle
-		OnFireSound: ironcur9.aud
-	Production:
-		Produces: Building
 
 MNLYR:
 	Inherits: ^Tank
+	Buildable:
+		Queue: Vehicle
+		BuildPaletteOrder: 30
+		Prerequisites: fix
+		Description: Lays mines to destroy unwary enemy units.\n  Unarmed
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -134,18 +111,43 @@ FTUR:
 	CashTrickler:
 		Interval: 150
 		Amount: 30
-	-Power:
+	ChronoshiftPower:
+		Icon: chrono
+		ChargeTime: 60
+		Description: Chronoshift
+		LongDesc: Teleport a group of vehicles across\nthe map.
+		SelectTargetSound: slcttgt1.aud
+		BeginChargeSound: chrochr1.aud
+		EndChargeSound: chrordy1.aud
+		Range: 3
+	GrantExternalConditionPower@IRONCURTAIN:
+		Icon: invuln
+		ChargeTime: 30
+		Description: Invulnerability
+		LongDesc: Makes a unit invulnerable\nfor 3 seconds.
+		Duration: 75
+		SelectTargetSound: slcttgt1.aud
+		BeginChargeSound: ironchg1.aud
+		EndChargeSound: ironrdy1.aud
+		Range: 1
+		Condition: invulnerability
+		Sequence: idle
+		OnFireSound: ironcur9.aud
+	Power:
+		Amount: 0
 
 MINVV:
-	Inherits: ^SpriteActor
+	Inherits@1: ^SpriteActor
 	HiddenUnderFog:
 	Building:
+		Adjacent: 99
 		TerrainTypes: Clear,Road
-		Adjacent: -1
+	ProvidesPrerequisite:
+		Prerequisite: MNLYVV
 	Buildable:
 		Queue: Building
-		BuildPaletteOrder: 10
-		Description: Bomb which explodes after 8 seconds
+		BuildPaletteOrder: 30
+		Description: Bomb (Hotkey B)
 	Valued:
 		Cost: 30
 	Health:
@@ -159,10 +161,44 @@ MINVV:
 		Step: -1
 		Delay: 1
 		HealIfBelow: 101
+		DamageCooldown: 0
 	Explodes:
 		Weapon: CrateNuke
 		EmptyWeapon: CrateNuke
 	HitShape:
 
 T17:
-	-Health:
+	Health:
+		HP: 999999999
+	Building:
+		Adjacent: 99
+	GivesBuildableArea:
+	Production:
+		Produces: Building
+	BaseBuilding:
+	Tooltip:
+		Name: Tree
+	ChronoshiftPower:
+		Icon: chrono
+		ChargeTime: 60
+		Description: Chronoshift
+		LongDesc: Teleport a group of vehicles across\nthe map.
+		SelectTargetSound: slcttgt1.aud
+		BeginChargeSound: chrochr1.aud
+		EndChargeSound: chrordy1.aud
+		Duration: 999999
+		KillCargo: yes
+		Range: 3
+	GrantExternalConditionPower@IRONCURTAIN:
+		Icon: invuln
+		ChargeTime: 30
+		Description: Invulnerability
+		LongDesc: Makes a unit invulnerable\nfor 3 seconds.
+		Duration: 75
+		SelectTargetSound: slcttgt1.aud
+		BeginChargeSound: ironchg1.aud
+		EndChargeSound: ironrdy1.aud
+		Range: 1
+		Condition: invulnerability
+		Sequence: idle
+		OnFireSound: ironcur9.aud

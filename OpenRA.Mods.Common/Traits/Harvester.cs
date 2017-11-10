@@ -78,14 +78,13 @@ namespace OpenRA.Mods.Common.Traits
 
 	public class Harvester : IIssueOrder, IResolveOrder, IPips,
 		IExplodeModifier, IOrderVoice, ISpeedModifier, ISync, INotifyCreated,
-		INotifyIdle, INotifyBlockingMove
+		INotifyIdle, INotifyBlockingMove, INotifyBuildComplete
 	{
 		public readonly HarvesterInfo Info;
 		readonly Mobile mobile;
 		readonly ResourceLayer resLayer;
 		readonly ResourceClaimLayer claimLayer;
 		Dictionary<ResourceTypeInfo, int> contents = new Dictionary<ResourceTypeInfo, int>();
-		INotifyHarvesterAction[] notify;
 		bool idleSmart = true;
 		int idleDuration;
 
@@ -119,17 +118,20 @@ namespace OpenRA.Mods.Common.Traits
 
 		void INotifyCreated.Created(Actor self)
 		{
-			notify = self.TraitsImplementing<INotifyHarvesterAction>().ToArray();
-
-			// Note: This is queued in a FrameEndTask because otherwise the activity is dropped/overridden while moving out of a factory.
 			if (Info.SearchOnCreation)
-				self.World.AddFrameEndTask(w => self.QueueActivity(new FindResources(self)));
+				self.QueueActivity(new FindResources(self));
+		}
+
+		void INotifyBuildComplete.BuildingComplete(Actor self)
+		{
+			if (Info.SearchOnCreation)
+				self.QueueActivity(new FindResources(self));
 		}
 
 		public void SetProcLines(Actor proc)
 		{
-			if (proc == null || proc.IsDead)
-				return;
+			if (proc == null) return;
+			if (proc.Disposed) return;
 
 			var linkedHarvs = proc.World.ActorsHavingTrait<Harvester>(h => h.LinkedProc == proc)
 				.Select(a => Target.FromActor(a))
@@ -268,8 +270,7 @@ namespace OpenRA.Mods.Common.Traits
 		void INotifyIdle.TickIdle(Actor self)
 		{
 			// Should we be intelligent while idle?
-			if (!idleSmart)
-				return;
+			if (!idleSmart) return;
 
 			// Are we not empty? Deliver resources:
 			if (!IsEmpty)
@@ -342,8 +343,11 @@ namespace OpenRA.Mods.Common.Traits
 
 		public Order IssueOrder(Actor self, IOrderTargeter order, Target target, bool queued)
 		{
-			if (order.OrderID == "Deliver" || order.OrderID == "Harvest")
-				return new Order(order.OrderID, self, target, queued);
+			if (order.OrderID == "Deliver")
+				return new Order(order.OrderID, self, queued) { TargetActor = target.Actor };
+
+			if (order.OrderID == "Harvest")
+				return new Order(order.OrderID, self, queued) { TargetLocation = self.World.Map.CellContaining(target.CenterPosition) };
 
 			return null;
 		}
@@ -385,6 +389,7 @@ namespace OpenRA.Mods.Common.Traits
 				self.QueueActivity(findResources);
 				self.SetTargetLine(Target.FromCell(self.World, loc.Value), Color.Red);
 
+				var notify = self.TraitsImplementing<INotifyHarvesterAction>();
 				foreach (var n in notify)
 					n.MovingToResources(self, loc.Value, findResources);
 
@@ -412,11 +417,13 @@ namespace OpenRA.Mods.Common.Traits
 				var deliver = new DeliverResources(self);
 				self.QueueActivity(deliver);
 
+				var notify = self.TraitsImplementing<INotifyHarvesterAction>();
 				foreach (var n in notify)
 					n.MovingToRefinery(self, order.TargetLocation, deliver);
 			}
 			else if (order.OrderString == "Stop" || order.OrderString == "Move")
 			{
+				var notify = self.TraitsImplementing<INotifyHarvesterAction>();
 				foreach (var n in notify)
 					n.MovementCancelled(self);
 

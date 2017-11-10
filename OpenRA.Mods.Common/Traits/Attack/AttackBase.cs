@@ -132,7 +132,17 @@ namespace OpenRA.Mods.Common.Traits
 		Order IIssueOrder.IssueOrder(Actor self, IOrderTargeter order, Target target, bool queued)
 		{
 			if (order is AttackOrderTargeter)
-				return new Order(order.OrderID, self, target, queued);
+			{
+				switch (target.Type)
+				{
+					case TargetType.Actor:
+						return new Order(order.OrderID, self, queued) { TargetActor = target.Actor };
+					case TargetType.FrozenActor:
+						return new Order(order.OrderID, self, queued) { ExtraData = target.FrozenActor.ID };
+					case TargetType.Terrain:
+						return new Order(order.OrderID, self, queued) { TargetLocation = self.World.Map.CellContaining(target.CenterPosition) };
+				}
+			}
 
 			return null;
 		}
@@ -157,6 +167,28 @@ namespace OpenRA.Mods.Common.Traits
 		protected virtual void OnStopOrder(Actor self)
 		{
 			self.CancelActivity();
+		}
+
+		static Target TargetFromOrder(Actor self, Order order)
+		{
+			// Not targeting a frozen actor
+			if (order.ExtraData == 0)
+				return Target.FromOrder(self.World, order);
+
+			// Targeted an actor under the fog
+			var frozenLayer = self.Owner.PlayerActor.TraitOrDefault<FrozenActorLayer>();
+			if (frozenLayer == null)
+				return Target.Invalid;
+
+			var frozen = frozenLayer.FromID(order.ExtraData);
+			if (frozen == null)
+				return Target.Invalid;
+
+			// Target is still alive - resolve the real order
+			if (frozen.Actor != null && frozen.Actor.IsInWorld)
+				return Target.FromActor(frozen.Actor);
+
+			return Target.Invalid;
 		}
 
 		string IOrderVoice.VoicePhraseForOrder(Actor self, Order order)

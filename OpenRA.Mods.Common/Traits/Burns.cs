@@ -40,7 +40,7 @@ namespace OpenRA.Mods.Common.Traits
 			self.Trait<RenderSprites>().Add(anim);
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (--ticks <= 0)
 			{

@@ -23,14 +23,14 @@ namespace OpenRA.Mods.Common.Activities
 	{
 		readonly Actor self;
 		readonly Cargo cargo;
-		readonly INotifyUnload[] notifiers;
+		readonly Cloak[] cloaks;
 		readonly bool unloadAll;
 
 		public UnloadCargo(Actor self, bool unloadAll)
 		{
 			this.self = self;
 			cargo = self.Trait<Cargo>();
-			notifiers = self.TraitsImplementing<INotifyUnload>().ToArray();
+			cloaks = self.TraitsImplementing<Cloak>().ToArray();
 			this.unloadAll = unloadAll;
 		}
 
@@ -60,8 +60,9 @@ namespace OpenRA.Mods.Common.Activities
 			if (IsCanceled || cargo.IsEmpty(self))
 				return NextActivity;
 
-			foreach (var inu in notifiers)
-				inu.Unloading(self);
+			foreach (var cloak in cloaks)
+				if (cloak.Info.UncloakOn.HasFlag(UncloakType.Unload))
+					cloak.Uncloak();
 
 			var actor = cargo.Peek(self);
 			var spawn = self.CenterPosition;

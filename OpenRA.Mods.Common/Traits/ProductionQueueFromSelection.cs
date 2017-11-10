@@ -39,7 +39,7 @@ namespace OpenRA.Mods.Common.Traits
 			paletteWidget = Exts.Lazy(() => Ui.Root.GetOrNull(info.ProductionPaletteWidget) as ProductionPaletteWidget);
 		}
 
-		void INotifySelection.SelectionChanged()
+		public void SelectionChanged()
 		{
 			// Disable for spectators
 			if (world.LocalPlayer == null)

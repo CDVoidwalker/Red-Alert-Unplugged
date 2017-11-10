@@ -46,7 +46,7 @@ namespace OpenRA.Mods.Common.Traits
 			conditionManager = self.TraitOrDefault<ConditionManager>();
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (conditionManager == null)
 				return;

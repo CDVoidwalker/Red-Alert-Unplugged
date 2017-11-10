@@ -716,8 +716,6 @@ TMPL:
 		LaunchSpeechNotification: NuclearWeaponLaunched
 		IncomingSpeechNotification: NuclearWarheadApproaching
 		MissileWeapon: atomic
-		MissileDelay: 11
-		SpawnOffset: 3c0,0,-1c512
 		DisplayBeacon: True
 		BeaconPoster: atomic
 		BeaconPosterPalette: beaconposter
@@ -726,9 +724,6 @@ TMPL:
 		ArrowSequence: arrow
 		ClockSequence: clock
 		CircleSequence: circles
-	WithNukeLaunchAnimation:
-	WithNukeLaunchOverlay:
-		Sequence: smoke
 	SupportPowerChargeBar:
 	Power:
 		Amount: -150
@@ -761,7 +756,7 @@ GUN:
 		TurnSpeed: 12
 		InitialFacing: 56
 	-WithSpriteBody:
-	WithEmbeddedTurretSpriteBody:
+	WithTurretedSpriteBody:
 	Armament:
 		Weapon: TurretGun
 		LocalOffset: 512,0,112
@@ -811,7 +806,7 @@ SAM:
 		InitialFacing: 0
 		RealignDelay: -1
 	-WithSpriteBody:
-	WithEmbeddedTurretSpriteBody:
+	WithTurretedSpriteBody:
 	AutoSelectionSize:
 	Armament:
 		Weapon: Dragon

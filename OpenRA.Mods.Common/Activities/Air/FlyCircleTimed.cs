@@ -9,16 +9,28 @@
  */
 #endregion
 
-namespace OpenRA.Traits
-{
-	[Desc("Enables visualization commands. Attach this to the world actor.")]
-	public class DebugVisualizationsInfo : TraitInfo<DebugVisualizations> { }
+using OpenRA.Activities;
+using OpenRA.Mods.Common.Traits;
 
-	public class DebugVisualizations
+namespace OpenRA.Mods.Common.Activities
+{
+	public class FlyCircleTimed : FlyCircle
 	{
-		public bool CombatGeometry;
-		public bool RenderGeometry;
-		public bool DepthBuffer;
-		public bool ActorTags;
+		int remainingTicks;
+
+		public FlyCircleTimed(Actor self, int ticks) : base(self)
+		{
+			remainingTicks = ticks;
+		}
+
+		public override Activity Tick(Actor self)
+		{
+			if (IsCanceled || remainingTicks-- == 0)
+				return NextActivity;
+
+			base.Tick(self);
+
+			return this;
+		}
 	}
 }

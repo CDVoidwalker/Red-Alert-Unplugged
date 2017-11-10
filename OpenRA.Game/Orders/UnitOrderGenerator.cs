@@ -21,7 +21,7 @@ namespace OpenRA.Orders
 		static Target TargetForInput(World world, CPos cell, int2 worldPixel, MouseInput mi)
 		{
 			var actor = world.ScreenMap.ActorsAt(mi)
-				.Where(a => a.Info.HasTraitInfo<ITargetableInfo>() && !world.FogObscures(a))
+				.Where(a => !world.FogObscures(a) && a.Info.HasTraitInfo<ITargetableInfo>())
 				.WithHighestSelectionPriority(worldPixel);
 
 			if (actor != null)
@@ -49,6 +49,11 @@ namespace OpenRA.Orders
 			var actorsInvolved = orders.Select(o => o.Actor).Distinct();
 			if (!actorsInvolved.Any())
 				yield break;
+
+			yield return new Order("CreateGroup", actorsInvolved.First().Owner.PlayerActor, false)
+			{
+				TargetString = actorsInvolved.Select(a => a.ActorID).JoinWith(",")
+			};
 
 			foreach (var o in orders)
 				yield return CheckSameOrder(o.Order, o.Trait.IssueOrder(o.Actor, o.Order, o.Target, mi.Modifiers.HasModifier(Modifiers.Shift)));

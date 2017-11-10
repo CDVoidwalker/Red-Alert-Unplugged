@@ -56,19 +56,8 @@ namespace OpenRA.Mods.Cnc.Traits
 		public object Create(ActorInitializer init) { return new MadTank(init.Self, this); }
 		public void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
-			WeaponInfo thumpDamageWeapon;
-			WeaponInfo detonationWeapon;
-			var thumpDamageWeaponToLower = (ThumpDamageWeapon ?? string.Empty).ToLowerInvariant();
-			var detonationWeaponToLower = (DetonationWeapon ?? string.Empty).ToLowerInvariant();
-
-			if (!rules.Weapons.TryGetValue(thumpDamageWeaponToLower, out thumpDamageWeapon))
-				throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(thumpDamageWeaponToLower));
-
-			if (!rules.Weapons.TryGetValue(detonationWeaponToLower, out detonationWeapon))
-				throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(detonationWeaponToLower));
-
-			ThumpDamageWeaponInfo = thumpDamageWeapon;
-			DetonationWeaponInfo = detonationWeapon;
+			ThumpDamageWeaponInfo = rules.Weapons[ThumpDamageWeapon.ToLowerInvariant()];
+			DetonationWeaponInfo = rules.Weapons[DetonationWeapon.ToLowerInvariant()];
 		}
 	}
 
@@ -89,7 +78,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			screenShaker = self.World.WorldActor.Trait<ScreenShaker>();
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (!deployed)
 				return;
@@ -116,12 +105,15 @@ namespace OpenRA.Mods.Cnc.Traits
 			}
 		}
 
-		Order IIssueOrder.IssueOrder(Actor self, IOrderTargeter order, Target target, bool queued)
+		public Order IssueOrder(Actor self, IOrderTargeter order, Target target, bool queued)
 		{
 			if (order.OrderID != "DetonateAttack" && order.OrderID != "Detonate")
 				return null;
 
-			return new Order(order.OrderID, self, target, queued);
+			if (target.Type == TargetType.FrozenActor)
+				return new Order(order.OrderID, self, queued) { ExtraData = target.FrozenActor.ID };
+
+			return new Order(order.OrderID, self, queued) { TargetActor = target.Actor };
 		}
 
 		Order IIssueDeployOrder.IssueDeployOrder(Actor self)
@@ -129,7 +121,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			return new Order("Detonate", self, false);
 		}
 
-		string IOrderVoice.VoicePhraseForOrder(Actor self, Order order)
+		public string VoicePhraseForOrder(Actor self, Order order)
 		{
 			return info.Voice;
 		}
@@ -178,7 +170,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			self.QueueActivity(new CallFunc(Detonate));
 		}
 
-		void IResolveOrder.ResolveOrder(Actor self, Order order)
+		public void ResolveOrder(Actor self, Order order)
 		{
 			if (order.OrderString == "DetonateAttack")
 			{

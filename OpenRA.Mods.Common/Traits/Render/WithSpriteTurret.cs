@@ -97,7 +97,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 			t.QuantizedFacings = DefaultAnimation.CurrentSequence.Facings;
 		}
 
-		protected virtual WVec TurretOffset(Actor self)
+		WVec TurretOffset(Actor self)
 		{
 			if (!Info.Recoils)
 				return t.Position(self);
@@ -143,7 +143,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		{
 			DefaultAnimation.PlayThen(NormalizeSequence(self, name), () =>
 			{
-				CancelCustomAnimation(self);
+				DefaultAnimation.Play(NormalizeSequence(self, Info.Sequence));
 				if (after != null)
 					after();
 			});

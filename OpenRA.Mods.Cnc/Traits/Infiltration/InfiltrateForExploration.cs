@@ -9,7 +9,6 @@
  */
 #endregion
 
-using System.Linq;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
@@ -23,9 +22,7 @@ namespace OpenRA.Mods.Cnc.Traits
 		void INotifyInfiltrated.Infiltrated(Actor self, Actor infiltrator)
 		{
 			infiltrator.Owner.Shroud.Explore(self.Owner.Shroud);
-			var preventReset = self.Owner.PlayerActor.TraitsImplementing<IPreventsShroudReset>()
-				.Any(p => p.PreventShroudReset(self));
-			if (!preventReset)
+			if (!self.Owner.HasFogVisibility)
 				self.Owner.Shroud.ResetExploration();
 		}
 	}

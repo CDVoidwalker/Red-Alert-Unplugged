@@ -64,7 +64,10 @@ namespace OpenRA.Mods.Cnc.Traits
 			if (order.OrderID != "Infiltrate")
 				return null;
 
-			return new Order(order.OrderID, self, target, queued);
+			if (target.Type == TargetType.FrozenActor)
+				return new Order(order.OrderID, self, queued) { ExtraData = target.FrozenActor.ID };
+
+			return new Order(order.OrderID, self, queued) { TargetActor = target.Actor };
 		}
 
 		bool IsValidOrder(Actor self, Order order)
@@ -72,14 +75,29 @@ namespace OpenRA.Mods.Cnc.Traits
 			if (IsTraitDisabled)
 				return false;
 
-			IEnumerable<string> targetTypes = null;
-			if (order.Target.Type == TargetType.FrozenActor)
-				targetTypes = order.Target.FrozenActor.TargetTypes;
+			// Not targeting an actor
+			if (order.ExtraData == 0 && order.TargetActor == null)
+				return false;
 
-			if (order.Target.Type == TargetType.Actor)
+			IEnumerable<string> targetTypes;
+
+			if (order.ExtraData != 0)
+			{
+				// Targeted an actor under the fog
+				var frozenLayer = self.Owner.PlayerActor.TraitOrDefault<FrozenActorLayer>();
+				if (frozenLayer == null)
+					return false;
+
+				var frozen = frozenLayer.FromID(order.ExtraData);
+				if (frozen == null)
+					return false;
+
+				targetTypes = frozen.TargetTypes;
+			}
+			else
 				targetTypes = order.TargetActor.GetEnabledTargetTypes();
 
-			return targetTypes != null && Info.Types.Overlaps(targetTypes);
+			return Info.Types.Overlaps(targetTypes);
 		}
 
 		public string VoicePhraseForOrder(Actor self, Order order)

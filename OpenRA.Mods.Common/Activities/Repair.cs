@@ -35,15 +35,6 @@ namespace OpenRA.Mods.Common.Activities
 			health = self.TraitOrDefault<Health>();
 		}
 
-		protected override void OnFirstRun(Actor self)
-		{
-			if (host.Actor.IsDead)
-				return;
-
-			foreach (var depot in host.Actor.TraitsImplementing<INotifyRepair>())
-				depot.BeforeRepair(host.Actor, self);
-		}
-
 		public override Activity Tick(Actor self)
 		{
 			if (IsCanceled)
@@ -90,7 +81,6 @@ namespace OpenRA.Mods.Common.Activities
 				}
 
 				Game.Sound.PlayNotification(self.World.Map.Rules, self.Owner, "Speech", repairsUnits.Info.FinishRepairingNotification, self.Owner.Faction.InternalName);
-
 				return NextActivity;
 			}
 
@@ -115,7 +105,7 @@ namespace OpenRA.Mods.Common.Activities
 				self.InflictDamage(host.Actor, new Damage(-hpToRepair));
 
 				foreach (var depot in host.Actor.TraitsImplementing<INotifyRepair>())
-					depot.RepairTick(host.Actor, self);
+					depot.Repairing(host.Actor, self);
 
 				remainingTicks = repairsUnits.Info.Interval;
 			}
@@ -123,15 +113,6 @@ namespace OpenRA.Mods.Common.Activities
 				--remainingTicks;
 
 			return this;
-		}
-
-		protected override void OnLastRun(Actor self)
-		{
-			if (host.Actor.IsDead)
-				return;
-
-			foreach (var depot in host.Actor.TraitsImplementing<INotifyRepair>())
-				depot.AfterRepair(host.Actor, self);
 		}
 	}
 }

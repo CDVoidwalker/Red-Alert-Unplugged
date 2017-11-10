@@ -14,7 +14,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits.Render
 {
-	public class WithTurretAttackAnimationInfo : ITraitInfo, Requires<WithSpriteTurretInfo>, Requires<ArmamentInfo>, Requires<AttackBaseInfo>
+	public class WithTurretedAttackAnimationInfo : ITraitInfo, Requires<WithSpriteTurretInfo>, Requires<ArmamentInfo>, Requires<AttackBaseInfo>
 	{
 		[Desc("Armament name")]
 		public readonly string Armament = "primary";
@@ -37,19 +37,19 @@ namespace OpenRA.Mods.Common.Traits.Render
 		[Desc("Should the animation be delayed relative to preparation or actual attack?")]
 		public readonly AttackDelayType DelayRelativeTo = AttackDelayType.Preparation;
 
-		public object Create(ActorInitializer init) { return new WithTurretAttackAnimation(init, this); }
+		public object Create(ActorInitializer init) { return new WithTurretedAttackAnimation(init, this); }
 	}
 
-	public class WithTurretAttackAnimation : ITick, INotifyAttack
+	public class WithTurretedAttackAnimation : ITick, INotifyAttack
 	{
-		readonly WithTurretAttackAnimationInfo info;
+		readonly WithTurretedAttackAnimationInfo info;
 		readonly AttackBase attack;
 		readonly Armament armament;
 		readonly WithSpriteTurret wst;
 
 		int tick;
 
-		public WithTurretAttackAnimation(ActorInitializer init, WithTurretAttackAnimationInfo info)
+		public WithTurretedAttackAnimation(ActorInitializer init, WithTurretedAttackAnimationInfo info)
 		{
 			this.info = info;
 			attack = init.Self.Trait<AttackBase>();
@@ -62,7 +62,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		void PlayAttackAnimation(Actor self)
 		{
 			if (!string.IsNullOrEmpty(info.AttackSequence))
-				wst.PlayCustomAnimation(self, info.AttackSequence);
+				wst.PlayCustomAnimation(self, info.AttackSequence, () => wst.CancelCustomAnimation(self));
 		}
 
 		void INotifyAttack.Attacking(Actor self, Target target, Armament a, Barrel barrel)

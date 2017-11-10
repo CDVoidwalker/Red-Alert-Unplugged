@@ -17,7 +17,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.AI
 {
-	public enum SquadType { Assault, Air, Rush, Protection, Naval }
+	public enum SquadType { Assault, Air, Rush, Protection }
 
 	public class Squad
 	{
@@ -54,9 +54,6 @@ namespace OpenRA.Mods.Common.AI
 				case SquadType.Protection:
 					FuzzyStateMachine.ChangeState(this, new UnitsForProtectionIdleState(), true);
 					break;
-				case SquadType.Naval:
-					FuzzyStateMachine.ChangeState(this, new NavyUnitsIdleState(), true);
-					break;
 			}
 		}
 
@@ -81,7 +78,7 @@ namespace OpenRA.Mods.Common.AI
 
 		public bool IsTargetVisible
 		{
-			get { return TargetActor.CanBeViewedByPlayer(Bot.Player); }
+			get { return Bot.Player.PlayerActor.Owner.CanTargetActor(TargetActor); }
 		}
 
 		public WPos CenterPosition { get { return Units.Select(u => u.CenterPosition).Average(); } }

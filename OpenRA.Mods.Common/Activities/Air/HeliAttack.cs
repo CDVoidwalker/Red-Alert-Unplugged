@@ -52,20 +52,13 @@ namespace OpenRA.Mods.Common.Activities
 
 		public override Activity Tick(Actor self)
 		{
-			// Refuse to take off if it would land immediately again.
-			if (helicopter.ForceLanding)
-			{
-				Cancel(self);
-				return NextActivity;
-			}
-
 			if (IsCanceled || !target.IsValidFor(self))
 				return NextActivity;
 
 			var pos = self.CenterPosition;
 			var targetPos = attackHeli.GetTargetPosition(pos, target);
 			if (attackOnlyVisibleTargets && target.Type == TargetType.Actor && canHideUnderFog
-				&& !target.Actor.CanBeViewedByPlayer(self.Owner))
+				&& !self.Owner.CanTargetActor(target.Actor))
 			{
 				var newTarget = Target.FromCell(self.World, self.World.Map.CellContaining(targetPos));
 

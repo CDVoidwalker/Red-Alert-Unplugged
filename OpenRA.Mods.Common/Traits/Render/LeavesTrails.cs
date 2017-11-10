@@ -91,7 +91,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		bool wasStationary;
 		bool isMoving;
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (IsTraitDisabled)
 				return;

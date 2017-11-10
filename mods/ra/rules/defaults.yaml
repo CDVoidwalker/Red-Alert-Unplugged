@@ -207,8 +207,9 @@
 
 ^Vehicle:
 	Inherits@1: ^ExistsInWorld
-	Inherits@2: ^IronCurtainable
-	Inherits@3: ^SpriteActor
+	Inherits@2: ^GainsExperience
+	Inherits@3: ^IronCurtainable
+	Inherits@4: ^SpriteActor
 	Huntable:
 	DrawLineToTarget:
 	UpdatesPlayerStatistics:
@@ -248,7 +249,7 @@
 	Tooltip:
 		GenericName: Vehicle
 	Capturable:
-		Types: vehicle
+		Type: vehicle
 		CaptureThreshold: 100
 		CancelActivity: True
 	CaptureNotification:
@@ -564,8 +565,6 @@
 		CanHover: True
 		CruisingCondition: cruising
 		WaitDistanceFromResupplyBase: 4c0
-		TakeOffOnResupply: true
-		VTOL: true
 	GpsDot:
 		String: Helicopter
 	Hovers@CRUISING:
@@ -893,9 +892,9 @@
 	Burns:
 		Damage: 2
 	Capturable:
-		Types: husk
+		Type: husk
+		AllowAllies: true
 		CaptureThreshold: 100
-		ValidStances: Enemy, Neutral, Ally
 	TransformOnCapture:
 		ForceHealthPercentage: 25
 	WithColoredOverlay@IDISABLE:
@@ -921,7 +920,6 @@
 		Spins: False
 		Moves: True
 		Velocity: 86
-		Explosion: UnitExplodePlane
 	EditorTilesetFilter:
 		Categories: Husk
 	RevealOnDeath:
@@ -937,9 +935,7 @@
 		GenericName: Destroyed Helicopter
 	Aircraft:
 		CanHover: True
-		VTOL: true
 	FallsToEarth:
-		Explosion: UnitExplodeHeli
 	BodyOrientation:
 		UseClassicFacingFudge: True
 	RevealOnDeath:

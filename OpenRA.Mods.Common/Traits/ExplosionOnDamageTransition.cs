@@ -35,15 +35,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
-			if (string.IsNullOrEmpty(Weapon))
-				return;
-
-			WeaponInfo weapon;
-			var weaponToLower = Weapon.ToLowerInvariant();
-			if (!rules.Weapons.TryGetValue(weaponToLower, out weapon))
-				throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(weaponToLower));
-
-			WeaponInfo = weapon;
+			WeaponInfo = string.IsNullOrEmpty(Weapon) ? null : rules.Weapons[Weapon.ToLowerInvariant()];
 		}
 	}
 

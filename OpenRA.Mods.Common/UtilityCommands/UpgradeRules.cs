@@ -15,7 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OpenRA.FileSystem;
-using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.UtilityCommands
 {
@@ -922,137 +921,6 @@ namespace OpenRA.Mods.Common.UtilityCommands
 					}
 				}
 
-				// Replace Mobile.OnRails hack with dedicated TDGunboat traits in Mods.Cnc
-				if (engineVersion < 20171015)
-				{
-					var mobile = node.Value.Nodes.FirstOrDefault(n => n.Key == "Mobile");
-					if (mobile != null)
-					{
-						var onRailsNode = mobile.Value.Nodes.FirstOrDefault(n => n.Key == "OnRails");
-						var onRails = onRailsNode != null ? FieldLoader.GetValue<bool>("OnRails", onRailsNode.Value.Value) : false;
-						if (onRails)
-						{
-							var speed = mobile.Value.Nodes.FirstOrDefault(n => n.Key == "Speed");
-							var initFacing = mobile.Value.Nodes.FirstOrDefault(n => n.Key == "InitialFacing");
-							var previewFacing = mobile.Value.Nodes.FirstOrDefault(n => n.Key == "PreviewFacing");
-							var tdGunboat = new MiniYamlNode("TDGunboat", "");
-							if (speed != null)
-								tdGunboat.Value.Nodes.Add(speed);
-							if (initFacing != null)
-								tdGunboat.Value.Nodes.Add(initFacing);
-							if (previewFacing != null)
-								tdGunboat.Value.Nodes.Add(previewFacing);
-
-							node.Value.Nodes.Add(tdGunboat);
-
-							var attackTurreted = node.Value.Nodes.FirstOrDefault(n => n.Key.StartsWith("AttackTurreted", StringComparison.Ordinal));
-							if (attackTurreted != null)
-								RenameNodeKey(attackTurreted, "AttackTDGunboatTurreted");
-
-							node.Value.Nodes.Remove(mobile);
-						}
-					}
-				}
-
-				// Introduced TakeOffOnCreation and TakeOffOnResupply booleans to aircraft
-				if (engineVersion < 20171015)
-				{
-					if (node.Key.StartsWith("Aircraft", StringComparison.Ordinal))
-					{
-						var canHover = node.Value.Nodes.FirstOrDefault(n => n.Key == "CanHover");
-						var isHeli = canHover != null ? FieldLoader.GetValue<bool>("CanHover", canHover.Value.Value) : false;
-						if (isHeli)
-						{
-							Console.WriteLine("Helicopters taking off automatically while planes don't is no longer hardcoded.");
-							Console.WriteLine("Instead, this is controlled via the TakeOffOnResupply field.");
-							Console.WriteLine("Please check if your aircraft behave as intended or need manual adjustments.");
-							node.Value.Nodes.Add(new MiniYamlNode("TakeOffOnResupply", "true"));
-						}
-
-						// Upgrade rule for setting VTOL to true for CanHover actors
-						if (isHeli)
-							node.Value.Nodes.Add(new MiniYamlNode("VTOL", "true"));
-					}
-				}
-
-				// nuke launch animation is now it's own trait
-				if (engineVersion < 20171015)
-				{
-					if (depth == 1 && node.Key.StartsWith("NukePower", StringComparison.Ordinal))
-					{
-						node.Value.Nodes.RemoveAll(n => n.Key == "ActivationSequence");
-						addNodes.Add(new MiniYamlNode("WithNukeLaunchAnimation", new MiniYaml("")));
-					}
-				}
-
-				if (engineVersion < 20171015)
-				{
-					if (node.Key.StartsWith("WithTurretedAttackAnimation", StringComparison.Ordinal))
-						RenameNodeKey(node, "WithTurretAttackAnimation");
-					if (node.Key.StartsWith("WithTurretedSpriteBody", StringComparison.Ordinal))
-						RenameNodeKey(node, "WithEmbeddedTurretSpriteBody");
-				}
-
-				if (engineVersion < 20171015)
-				{
-					if (node.Key.StartsWith("PlayerPaletteFromCurrentTileset", StringComparison.Ordinal))
-					{
-						node.Value.Nodes.Add(new MiniYamlNode("Filename", ""));
-						node.Value.Nodes.Add(new MiniYamlNode("Tileset", ""));
-						RenameNodeKey(node, "PaletteFromFile");
-						Console.WriteLine("The trait PlayerPaletteFromCurrentTileset has been removed. Use PaletteFromFile with a Tileset filter.");
-					}
-				}
-
-				if (engineVersion < 20171021)
-				{
-					if (node.Key.StartsWith("Capturable", StringComparison.Ordinal) || node.Key.StartsWith("ExternalCapturable", StringComparison.Ordinal))
-					{
-						// Type renamed to Types
-						var type = node.Value.Nodes.FirstOrDefault(n => n.Key == "Type");
-						if (type != null)
-							RenameNodeKey(type, "Types");
-
-						// Allow(Allies|Neutral|Enemies) replaced with a ValidStances enum
-						var stance = Stance.Neutral | Stance.Enemy;
-						var allowAllies = node.Value.Nodes.FirstOrDefault(n => n.Key == "AllowAllies");
-						if (allowAllies != null)
-						{
-							if (FieldLoader.GetValue<bool>("AllowAllies", allowAllies.Value.Value))
-								stance |= Stance.Ally;
-							else
-								stance &= ~Stance.Ally;
-
-							node.Value.Nodes.Remove(allowAllies);
-						}
-
-						var allowNeutral = node.Value.Nodes.FirstOrDefault(n => n.Key == "AllowNeutral");
-						if (allowNeutral != null)
-						{
-							if (FieldLoader.GetValue<bool>("AllowNeutral", allowNeutral.Value.Value))
-								stance |= Stance.Neutral;
-							else
-								stance &= ~Stance.Neutral;
-
-							node.Value.Nodes.Remove(allowNeutral);
-						}
-
-						var allowEnemies = node.Value.Nodes.FirstOrDefault(n => n.Key == "AllowEnemies");
-						if (allowEnemies != null)
-						{
-							if (FieldLoader.GetValue<bool>("AllowEnemies", allowEnemies.Value.Value))
-								stance |= Stance.Enemy;
-							else
-								stance &= ~Stance.Enemy;
-
-							node.Value.Nodes.Remove(allowEnemies);
-						}
-
-						if (stance != (Stance.Neutral | Stance.Enemy))
-							node.Value.Nodes.Add(new MiniYamlNode("ValidStances", stance.ToString()));
-					}
-				}
-
 				UpgradeActorRules(modData, engineVersion, ref node.Value.Nodes, node, depth + 1);
 			}
 
@@ -1191,11 +1059,6 @@ namespace OpenRA.Mods.Common.UtilityCommands
 							projectile.Value.Nodes.Add(new MiniYamlNode("TerrainHeightAware", "true"));
 					}
 				}
-
-				// Rename BurstDelay to BurstDelays
-				if (engineVersion < 20170818)
-					if (node.Key == "BurstDelay")
-						node.Key = "BurstDelays";
 
 				UpgradeWeaponRules(modData, engineVersion, ref node.Value.Nodes, node, depth + 1);
 			}

@@ -81,7 +81,7 @@ FCOM:
 	RevealsShroud@GAPGEN:
 		Range: 4c0
 	WithBuildingBib:
-	ExternalCapturable:
+	ExternalCapturable: 
 		CaptureCompleteTime: 30
 	ExternalCapturableBar:
 	GivesBuildableArea:
@@ -377,7 +377,7 @@ MISS:
 	Tooltip:
 		Name: Communications Center
 	WithBuildingBib:
-	ExternalCapturable:
+	ExternalCapturable: 
 	ExternalCapturableBar:
 	EngineerRepairable:
 	WithDeathAnimation:

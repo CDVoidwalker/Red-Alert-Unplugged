@@ -76,7 +76,7 @@ namespace OpenRA.Mods.Cnc.Traits.Render
 			wsb.PlayCustomAnimation(self, info.CloseSequence);
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (ShouldBeOpen())
 				Open();

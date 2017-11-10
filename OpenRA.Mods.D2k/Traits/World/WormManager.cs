@@ -59,7 +59,7 @@ namespace OpenRA.Mods.D2k.Traits
 			enabled = self.Trait<MapCreeps>().Enabled;
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (!enabled)
 				return;

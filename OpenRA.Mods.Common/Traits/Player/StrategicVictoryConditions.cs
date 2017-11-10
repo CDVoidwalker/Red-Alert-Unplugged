@@ -71,7 +71,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public bool Holding { get { return Owned >= info.RatioRequired * Total / 100; } }
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (player.WinState != WinState.Undefined || player.NonCombatant) return;
 

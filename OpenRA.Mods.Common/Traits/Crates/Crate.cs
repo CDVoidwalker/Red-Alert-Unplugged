@@ -153,7 +153,7 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (info.Lifetime != 0 && self.IsInWorld && ++ticks >= info.Lifetime * 25)
 				self.Dispose();
@@ -212,7 +212,7 @@ namespace OpenRA.Mods.Common.Traits
 			return self.IsAtGroundLevel() && crushClasses.Contains(info.CrushClass);
 		}
 
-		void INotifyAddedToWorld.AddedToWorld(Actor self)
+		public void AddedToWorld(Actor self)
 		{
 			self.World.AddToMaps(self, this);
 
@@ -221,7 +221,7 @@ namespace OpenRA.Mods.Common.Traits
 				cs.IncrementCrates();
 		}
 
-		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
+		public void RemovedFromWorld(Actor self)
 		{
 			self.World.RemoveFromMaps(self, this);
 

@@ -104,7 +104,7 @@ namespace OpenRA.Mods.Common.Traits
 			return info.AlwaysVisibleStances.HasStance(stance) || IsVisibleInner(self, byPlayer);
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (self.Disposed)
 				return;
@@ -123,7 +123,7 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
-		void ITickRender.TickRender(WorldRenderer wr, Actor self)
+		public void TickRender(WorldRenderer wr, Actor self)
 		{
 			IRenderable[] renderables = null;
 			for (var playerIndex = 0; playerIndex < frozenStates.Count; playerIndex++)

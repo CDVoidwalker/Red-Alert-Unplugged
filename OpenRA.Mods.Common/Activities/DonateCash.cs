@@ -42,12 +42,6 @@ namespace OpenRA.Mods.Common.Activities
 
 			if (self.Owner.IsAlliedWith(self.World.RenderPlayer))
 				self.World.AddFrameEndTask(w => w.Add(new FloatingText(target.CenterPosition, target.Owner.Color.RGB, FloatingText.FormatCashTick(payload), 30)));
-
-			foreach (var nct in target.TraitsImplementing<INotifyCashTransfer>())
-				nct.OnAcceptingCash(target, self);
-
-			foreach (var nct in self.TraitsImplementing<INotifyCashTransfer>())
-				nct.OnDeliveringCash(self, target);
 		}
 	}
 }

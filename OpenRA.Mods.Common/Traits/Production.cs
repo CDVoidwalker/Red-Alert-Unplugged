@@ -49,16 +49,20 @@ namespace OpenRA.Mods.Common.Traits
 			building = self.TraitOrDefault<Building>();
 		}
 
-		public virtual void DoProduction(Actor self, ActorInfo producee, ExitInfo exitinfo, TypeDictionary inits)
+		public virtual void DoProduction(Actor self, ActorInfo producee, ExitInfo exitinfo, string factionVariant)
 		{
 			var exit = CPos.Zero;
 			var exitLocation = CPos.Zero;
 			var target = Target.Invalid;
 
-			// Clone the initializer dictionary for the new actor
-			var td = new TypeDictionary();
-			foreach (var init in inits)
-				td.Add(init);
+			var bi = producee.TraitInfoOrDefault<BuildableInfo>();
+			if (bi != null && bi.ForceFaction != null)
+				factionVariant = bi.ForceFaction;
+
+			var td = new TypeDictionary
+			{
+				new OwnerInit(self.Owner),
+			};
 
 			if (self.OccupiesSpace != null)
 			{
@@ -89,6 +93,9 @@ namespace OpenRA.Mods.Common.Traits
 
 			self.World.AddFrameEndTask(w =>
 			{
+				if (factionVariant != null)
+					td.Add(new FactionInit(factionVariant));
+
 				var newUnit = self.World.CreateActor(producee.Name, td);
 
 				var move = newUnit.TraitOrDefault<IMove>();
@@ -120,7 +127,7 @@ namespace OpenRA.Mods.Common.Traits
 			});
 		}
 
-		public virtual bool Produce(Actor self, ActorInfo producee, TypeDictionary inits)
+		public virtual bool Produce(Actor self, ActorInfo producee, string factionVariant)
 		{
 			if (Reservable.IsReserved(self) || (building != null && building.Locked))
 				return false;
@@ -131,7 +138,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (exit != null || self.OccupiesSpace == null)
 			{
-				DoProduction(self, producee, exit, inits);
+				DoProduction(self, producee, exit, factionVariant);
 				return true;
 			}
 

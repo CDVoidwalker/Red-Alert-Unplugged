@@ -38,9 +38,6 @@ namespace OpenRA.Mods.Common.Warheads
 		[Desc("List of sounds that can be played on impact.")]
 		public readonly string[] ImpactSounds = new string[0];
 
-		[Desc("Chance of impact sound to play.")]
-		public readonly int ImpactSoundChance = 100;
-
 		[Desc("Consider explosion above this altitude an air explosion.",
 			"If that's the case, this warhead will consider the explosion position to have the 'Air' TargetType (in addition to any nearby actor's TargetTypes).")]
 		public readonly WDist AirThreshold = new WDist(128);
@@ -138,7 +135,7 @@ namespace OpenRA.Mods.Common.Warheads
 			}
 
 			var impactSound = ImpactSounds.RandomOrDefault(Game.CosmeticRandom);
-			if (impactSound != null && Game.CosmeticRandom.Next(0, 100) < ImpactSoundChance)
+			if (impactSound != null)
 				Game.Sound.Play(SoundType.World, impactSound, pos);
 		}
 

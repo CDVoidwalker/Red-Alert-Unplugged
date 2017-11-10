@@ -69,7 +69,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			ActOnFrozenActorsForAllPlayers(Refresh);
 		}
 
-		void INotifyActorDisposing.Disposing(Actor self)
+		public void Disposing(Actor self)
 		{
 			ActOnFrozenActorsForAllPlayers(Remove);
 		}

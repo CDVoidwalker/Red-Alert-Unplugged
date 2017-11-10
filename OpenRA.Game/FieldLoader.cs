@@ -273,10 +273,6 @@ namespace OpenRA
 
 				return InvalidValueAction(value, fieldType, fieldName);
 			}
-			else if (fieldType == typeof(NamedHotkey))
-			{
-				return new NamedHotkey(value, Game.Settings.Keys);
-			}
 			else if (fieldType == typeof(WDist))
 			{
 				WDist res;

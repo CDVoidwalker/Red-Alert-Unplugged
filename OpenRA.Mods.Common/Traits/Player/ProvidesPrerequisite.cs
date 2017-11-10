@@ -15,7 +15,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
-	public class ProvidesPrerequisiteInfo : ConditionalTraitInfo, ITechTreePrerequisiteInfo
+	public class ProvidesPrerequisiteInfo : ITechTreePrerequisiteInfo
 	{
 		[Desc("The prerequisite type that this provides. If left empty it defaults to the actor's name.")]
 		public readonly string Prerequisite = null;
@@ -28,26 +28,27 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Desc("Should it recheck everything when it is captured?")]
 		public readonly bool ResetOnOwnerChange = false;
-		public override object Create(ActorInitializer init) { return new ProvidesPrerequisite(init, this); }
+		public object Create(ActorInitializer init) { return new ProvidesPrerequisite(init, this); }
 	}
 
-	public class ProvidesPrerequisite : ConditionalTrait<ProvidesPrerequisiteInfo>, ITechTreePrerequisite, INotifyOwnerChanged, INotifyCreated
+	public class ProvidesPrerequisite : ITechTreePrerequisite, INotifyOwnerChanged
 	{
+		readonly ProvidesPrerequisiteInfo info;
 		readonly string prerequisite;
 
-		bool enabled;
-		TechTree techTree;
-		string faction;
+		bool enabled = true;
 
 		public ProvidesPrerequisite(ActorInitializer init, ProvidesPrerequisiteInfo info)
-			: base(info)
 		{
+			this.info = info;
 			prerequisite = info.Prerequisite;
 
 			if (string.IsNullOrEmpty(prerequisite))
 				prerequisite = init.Self.Info.Name;
 
-			faction = init.Contains<FactionInit>() ? init.Get<FactionInit, string>() : init.Self.Owner.Faction.InternalName;
+			var faction = init.Contains<FactionInit>() ? init.Get<FactionInit, string>() : init.Self.Owner.Faction.InternalName;
+
+			Update(init.Self.Owner, faction);
 		}
 
 		public IEnumerable<string> ProvidesPrerequisites
@@ -61,48 +62,21 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
-		protected override void Created(Actor self)
-		{
-			techTree = self.Owner.PlayerActor.Trait<TechTree>();
-
-			Update();
-
-			base.Created(self);
-		}
-
 		public void OnOwnerChanged(Actor self, Player oldOwner, Player newOwner)
 		{
-			techTree = newOwner.PlayerActor.Trait<TechTree>();
-
-			if (Info.ResetOnOwnerChange)
-				faction = newOwner.Faction.InternalName;
-
-			Update();
+			if (info.ResetOnOwnerChange)
+				Update(newOwner, newOwner.Faction.InternalName);
 		}
 
-		void Update()
+		void Update(Player owner, string faction)
 		{
-			enabled = !IsTraitDisabled;
-			if (IsTraitDisabled)
-				return;
+			enabled = true;
 
-			if (Info.Factions.Any())
-				enabled = Info.Factions.Contains(faction);
+			if (info.Factions.Any())
+				enabled = info.Factions.Contains(faction);
 
-			if (Info.RequiresPrerequisites.Any() && enabled)
-				enabled = techTree.HasPrerequisites(Info.RequiresPrerequisites);
-		}
-
-		protected override void TraitEnabled(Actor self)
-		{
-			Update();
-			techTree.ActorChanged(self);
-		}
-
-		protected override void TraitDisabled(Actor self)
-		{
-			Update();
-			techTree.ActorChanged(self);
+			if (info.RequiresPrerequisites.Any() && enabled)
+				enabled = owner.PlayerActor.Trait<TechTree>().HasPrerequisites(info.RequiresPrerequisites);
 		}
 	}
 }

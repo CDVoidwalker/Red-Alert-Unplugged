@@ -20,8 +20,6 @@ namespace OpenRA.Support
 {
 	public abstract class VariableExpression
 	{
-		public static readonly IReadOnlyDictionary<string, int> NoVariables = new ReadOnlyDictionary<string, int>(new Dictionary<string, int>());
-
 		public readonly string Expression;
 		readonly HashSet<string> variables = new HashSet<string>();
 		public IEnumerable<string> Variables { get { return variables; } }

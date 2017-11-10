@@ -45,7 +45,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 			if (--ticks <= 0)
 			{
-				wsb.PlayCustomAnimation(self, Info.Sequences.Random(Game.CosmeticRandom));
+				wsb.PlayCustomAnimation(self, Info.Sequences.Random(Game.CosmeticRandom), () => wsb.CancelCustomAnimation(self));
 				ticks = Info.Interval;
 			}
 		}

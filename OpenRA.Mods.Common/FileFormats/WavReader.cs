@@ -10,70 +10,72 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.FileFormats
 {
-	public static class WavReader
+	public class WavReader
 	{
-		enum WaveType { Pcm = 0x1, ImaAdpcm = 0x11 }
+		public int FileSize;
+		public string Format;
 
-		public static bool LoadSound(Stream s, out Func<Stream> result, out short channels, out int sampleBits, out int sampleRate)
+		public int FmtChunkSize;
+		public int AudioFormat;
+		public int Channels;
+		public int SampleRate;
+		public int ByteRate;
+		public int BlockAlign;
+		public int BitsPerSample;
+
+		public int UncompressedSize;
+		public int DataSize;
+		public byte[] RawOutput;
+
+		public enum WaveType { Pcm = 0x1, ImaAdpcm = 0x11 }
+		public static WaveType Type { get; private set; }
+
+		public bool LoadSound(Stream s)
 		{
-			result = null;
-			channels = -1;
-			sampleBits = -1;
-			sampleRate = -1;
-
 			var type = s.ReadASCII(4);
 			if (type != "RIFF")
 				return false;
 
-			s.ReadInt32(); // File-size
-			var format = s.ReadASCII(4);
-			if (format != "WAVE")
+			FileSize = s.ReadInt32();
+			Format = s.ReadASCII(4);
+			if (Format != "WAVE")
 				return false;
-
-			WaveType audioType = 0;
-			var dataOffset = -1L;
-			var dataSize = -1;
-			short blockAlign = -1;
-			int uncompressedSize = -1;
 			while (s.Position < s.Length)
 			{
 				if ((s.Position & 1) == 1)
 					s.ReadByte(); // Alignment
 
-				var blockType = s.ReadASCII(4);
-				switch (blockType)
+				type = s.ReadASCII(4);
+				switch (type)
 				{
 					case "fmt ":
-						var fmtChunkSize = s.ReadInt32();
-						var audioFormat = s.ReadInt16();
-						audioType = (WaveType)audioFormat;
+						FmtChunkSize = s.ReadInt32();
+						AudioFormat = s.ReadInt16();
+						Type = (WaveType)AudioFormat;
 
-						if (!Enum.IsDefined(typeof(WaveType), audioType))
-							throw new NotSupportedException("Compression type {0} is not supported.".F(audioFormat));
+						if (!Enum.IsDefined(typeof(WaveType), Type))
+							throw new NotSupportedException("Compression type {0} is not supported.".F(AudioFormat));
 
-						channels = s.ReadInt16();
-						sampleRate = s.ReadInt32();
-						s.ReadInt32(); // Byte Rate
-						blockAlign = s.ReadInt16();
-						sampleBits = s.ReadInt16();
+						Channels = s.ReadInt16();
+						SampleRate = s.ReadInt32();
+						ByteRate = s.ReadInt32();
+						BlockAlign = s.ReadInt16();
+						BitsPerSample = s.ReadInt16();
 
-						s.ReadBytes(fmtChunkSize - 16);
+						s.ReadBytes(FmtChunkSize - 16);
 						break;
 					case "fact":
 						var chunkSize = s.ReadInt32();
-						uncompressedSize = s.ReadInt32();
+						UncompressedSize = s.ReadInt32();
 						s.ReadBytes(chunkSize - 4);
 						break;
 					case "data":
-						dataSize = s.ReadInt32();
-						dataOffset = s.Position;
-						s.Position += dataSize;
+						DataSize = s.ReadInt32();
+						RawOutput = s.ReadBytes(DataSize);
 						break;
 					default:
 						var unknownChunkSize = s.ReadInt32();
@@ -82,18 +84,11 @@ namespace OpenRA.Mods.Common.FileFormats
 				}
 			}
 
-			if (audioType == WaveType.ImaAdpcm)
-				sampleBits = 16;
-
-			var chan = channels;
-			result = () =>
+			if (Type == WaveType.ImaAdpcm)
 			{
-				var audioStream = SegmentStream.CreateWithoutOwningStream(s, dataOffset, dataSize);
-				if (audioType == WaveType.ImaAdpcm)
-					return new WavStream(audioStream, dataSize, blockAlign, chan, uncompressedSize);
-
-				return audioStream; // Data is already PCM format.
-			};
+				RawOutput = DecodeImaAdpcmData();
+				BitsPerSample = 16;
+			}
 
 			return true;
 		}
@@ -117,86 +112,69 @@ namespace OpenRA.Mods.Common.FileFormats
 			return length / (channels * sampleRate * bitsPerSample);
 		}
 
-		sealed class WavStream : ReadOnlyAdapterStream
+		public byte[] DecodeImaAdpcmData()
 		{
-			readonly short channels;
-			readonly int numBlocks;
-			readonly int blockDataSize;
-			readonly int outputSize;
-			readonly int[] predictor;
-			readonly int[] index;
+			var s = new MemoryStream(RawOutput);
 
-			readonly byte[] interleaveBuffer;
-			int outOffset;
-			int currentBlock;
+			var numBlocks = DataSize / BlockAlign;
+			var blockDataSize = BlockAlign - (Channels * 4);
+			var outputSize = UncompressedSize * Channels * 2;
 
-			public WavStream(Stream stream, int dataSize, short blockAlign, short channels, int uncompressedSize) : base(stream)
+			var outOffset = 0;
+			var output = new byte[outputSize];
+
+			var predictor = new int[Channels];
+			var index = new int[Channels];
+
+			// Decode each block of IMA ADPCM data in RawOutput
+			for (var block = 0; block < numBlocks; block++)
 			{
-				this.channels = channels;
-				numBlocks = dataSize / blockAlign;
-				blockDataSize = blockAlign - (channels * 4);
-				outputSize = uncompressedSize * channels * 2;
-				predictor = new int[channels];
-				index = new int[channels];
-
-				interleaveBuffer = new byte[channels * 16];
-			}
-
-			protected override bool BufferData(Stream baseStream, Queue<byte> data)
-			{
-				// Decode each block of IMA ADPCM data
 				// Each block starts with a initial state per-channel
-				for (var c = 0; c < channels; c++)
+				for (var c = 0; c < Channels; c++)
 				{
-					predictor[c] = baseStream.ReadInt16();
-					index[c] = baseStream.ReadUInt8();
-					baseStream.ReadUInt8(); // Unknown/Reserved
+					predictor[c] = s.ReadInt16();
+					index[c] = s.ReadUInt8();
+					/* unknown/reserved */ s.ReadUInt8();
 
 					// Output first sample from input
-					data.Enqueue((byte)predictor[c]);
-					data.Enqueue((byte)(predictor[c] >> 8));
-					outOffset += 2;
+					output[outOffset++] = (byte)predictor[c];
+					output[outOffset++] = (byte)(predictor[c] >> 8);
 
 					if (outOffset >= outputSize)
-						return true;
+						return output;
 				}
 
 				// Decode and output remaining data in this block
 				var blockOffset = 0;
 				while (blockOffset < blockDataSize)
 				{
-					for (var c = 0; c < channels; c++)
+					for (var c = 0; c < Channels; c++)
 					{
 						// Decode 4 bytes (to 16 bytes of output) per channel
-						var chunk = baseStream.ReadBytes(4);
+						var chunk = s.ReadBytes(4);
 						var decoded = ImaAdpcmReader.LoadImaAdpcmSound(chunk, ref index[c], ref predictor[c]);
 
 						// Interleave output, one sample per channel
-						var interleaveChannelOffset = 2 * c;
+						var outOffsetChannel = outOffset + (2 * c);
 						for (var i = 0; i < decoded.Length; i += 2)
 						{
-							var interleaveSampleOffset = interleaveChannelOffset + i;
-							interleaveBuffer[interleaveSampleOffset] = decoded[i];
-							interleaveBuffer[interleaveSampleOffset + 1] = decoded[i + 1];
-							interleaveChannelOffset += 2 * (channels - 1);
+							var outOffsetSample = outOffsetChannel + i;
+							if (outOffsetSample >= outputSize)
+								return output;
+
+							output[outOffsetSample] = decoded[i];
+							output[outOffsetSample + 1] = decoded[i + 1];
+							outOffsetChannel += 2 * (Channels - 1);
 						}
 
 						blockOffset += 4;
 					}
 
-					var outputRemaining = outputSize - outOffset;
-					var toCopy = Math.Min(outputRemaining, interleaveBuffer.Length);
-					for (var i = 0; i < toCopy; i++)
-						data.Enqueue(interleaveBuffer[i]);
-
-					outOffset += 16 * channels;
-
-					if (outOffset >= outputSize)
-						return true;
+					outOffset += 16 * Channels;
 				}
-
-				return ++currentBlock >= numBlocks;
 			}
+
+			return output;
 		}
 	}
 }

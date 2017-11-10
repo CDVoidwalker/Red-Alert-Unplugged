@@ -51,7 +51,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			charges = info.MaxCharges;
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (--timeToRecharge <= 0)
 				charges = info.MaxCharges;

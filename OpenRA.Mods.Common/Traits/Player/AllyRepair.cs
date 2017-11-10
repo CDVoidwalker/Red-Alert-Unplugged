@@ -20,9 +20,10 @@ namespace OpenRA.Mods.Common.Traits
 	{
 		public void ResolveOrder(Actor self, Order order)
 		{
-			if (order.OrderString == "RepairBuilding" && order.Target.Type == TargetType.Actor)
+			if (order.OrderString == "RepairBuilding")
 			{
-				var building = order.Target.Actor;
+				var building = order.TargetActor;
+
 				if (building.Info.HasTraitInfo<RepairableBuildingInfo>())
 					if (building.AppearsFriendlyTo(self))
 						building.Trait<RepairableBuilding>().RepairBuilding(building, self.Owner);

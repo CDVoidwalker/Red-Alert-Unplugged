@@ -1,7 +1,7 @@
 E3:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAll
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 30
@@ -34,7 +34,7 @@ E3:
 CYBORG:
 	Inherits: ^Cyborg
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Armor:
 		Type: Light
 	Valued:
@@ -69,7 +69,7 @@ CYBORG:
 CYC2:
 	Inherits: ^Cyborg
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Armor:
 		Type: Heavy
 	Valued:

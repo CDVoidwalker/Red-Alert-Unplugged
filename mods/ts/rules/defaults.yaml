@@ -11,7 +11,6 @@
 ^SpriteActor:
 	BodyOrientation:
 		UseClassicPerspectiveFudge: False
-		CameraPitch: 85
 	QuantizeFacingsFromSequence:
 	AutoSelectionSize:
 	RenderSprites:
@@ -133,17 +132,8 @@
 		InvalidTargets: NoAutoTarget
 	AutoTargetPriority@ATTACKANYTHING:
 		RequiresCondition: stance-attackanything
-		ValidTargets: Infantry, Vehicle, Creep, Water, Building, Defense
+		ValidTargets: Infantry, Vehicle, Creep, Water, Structure, Defense
 		InvalidTargets: NoAutoTarget
-
-^AutoTargetGroundAssaultMove:
-	Inherits: ^AutoTargetGround
-	AutoTargetPriority@DEFAULT:
-		RequiresCondition: !stance-attackanything && !assault-move
-	AutoTargetPriority@ATTACKANYTHING:
-		RequiresCondition: stance-attackanything || assault-move
-	AttackMove:
-		AssaultMoveScanCondition: assault-move
 
 ^AutoTargetAir:
 	AutoTarget:
@@ -160,131 +150,8 @@
 		InvalidTargets: NoAutoTarget
 	AutoTargetPriority@ATTACKANYTHING:
 		RequiresCondition: stance-attackanything
-		ValidTargets: Infantry, Vehicle, Creep, Water, Air, Building, Defense
+		ValidTargets: Infantry, Vehicle, Creep, Water, Air, Structure, Defense
 		InvalidTargets: NoAutoTarget
-
-^AutoTargetAllAssaultMove:
-	Inherits: ^AutoTargetAll
-	AutoTargetPriority@DEFAULT:
-		RequiresCondition: !stance-attackanything && !assault-move
-	AutoTargetPriority@ATTACKANYTHING:
-		RequiresCondition: stance-attackanything || assault-move
-	AttackMove:
-		AssaultMoveScanCondition: assault-move
-
-^2x1Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -1024, -512
-			BottomRight: 1024, 512
-
-^1x2Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -512, -1024
-			BottomRight: 512, 1024
-
-^2x2Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -1024, -1024
-			BottomRight: 1024, 1024
-
-^1x3Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -512, -1536
-			BottomRight: 512, 1536
-
-^3x1Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -1536, -512
-			BottomRight: 1536, 512
-
-^3x2Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -1536, -1024
-			BottomRight: 1536, 1024
-
-^2x3Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -1024, -1536
-			BottomRight: 1024, 1536
-
-^3x3Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -1536, -1536
-			BottomRight: 1536, 1536
-
-^2x4Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -1024, -2048
-			BottomRight: 1024, 2048
-
-^4x2Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -2048, -1024
-			BottomRight: 2048, 1024
-
-^3x4Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -1536, -2048
-			BottomRight: 1536, 2048
-
-^4x3FactoryWithBibShape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -2048, -1536
-			BottomRight: 1024, 1536
-
-^4x3Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -2048, -1536
-			BottomRight: 2048, 1536
-
-^4x4Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -2048, -2048
-			BottomRight: 2048, 2048
-
-^3x5Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -1536, -2560
-			BottomRight: 1536, 2560
-
-^5x3Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -2560, -1536
-			BottomRight: 2560, 1536
-
-^2x5Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -1024, -2560
-			BottomRight: 1024, 2560
-
-^2x6Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -1024, -3072
-			BottomRight: 1024, 3072
-
-^6x4Shape:
-	HitShape:
-		Type: Rectangle
-			TopLeft: -3072, -2048
-			BottomRight: 3072, 2048
 
 ^BasicBuilding:
 	Inherits@1: ^ExistsInWorld
@@ -299,11 +166,7 @@
 	Targetable:
 		TargetTypes: Ground, Building, C4
 	HitShape:
-		UseTargetableCellsOffsets: true
-		Type: Rectangle
-			LocalYaw: -128
-			TopLeft: -512, -512
-			BottomRight: 512, 512
+		UseOccupiedCellsOffsets: true
 	Building:
 		Dimensions: 1,1
 		Footprint: x
@@ -334,7 +197,6 @@
 		Range: 2c0, 5c0
 	EditorTilesetFilter:
 		Categories: Building
-	CommandBarBlacklist:
 
 ^Building:
 	Inherits@1: ^BasicBuilding
@@ -381,7 +243,6 @@
 
 ^OldBase:
 	Inherits: ^CivBuilding
-	Inherits@SHAPE: ^2x2Shape
 	Building:
 		Footprint: xx xx
 		Dimensions: 2, 2
@@ -469,12 +330,6 @@
 			VerticalTopOffset: 768
 	EditorTilesetFilter:
 		Categories: Wall
-	Valued:
-		Cost: 50
-	CustomSellValue:
-		Value: 0
-	BlocksProjectiles:
-		Height: 768
 
 ^BuildingPlug:
 	AlwaysVisible:
@@ -725,7 +580,7 @@
 	HiddenUnderFog:
 	ActorLostNotification:
 	Capturable:
-		Types: Vehicle
+		Type: Vehicle
 		CaptureThreshold: 100
 		CancelActivity: True
 	Guard:
@@ -824,7 +679,6 @@
 		Type: GroundPosition
 	AttackMove:
 		Voice: Move
-		MoveIntoShroud: false
 	ActorLostNotification:
 	BodyOrientation:
 		QuantizedFacings: 0
@@ -846,8 +700,6 @@
 		CruiseAltitude: 2048
 		CanHover: True
 		CruisingCondition: cruising
-		TakeOffOnResupply: true
-		VTOL: true
 	Hovers@CRUISING:
 		RequiresCondition: cruising
 
@@ -1012,12 +864,9 @@
 		Range: 6c0
 	DetectCloaked:
 		Range: 5c0
-	Targetable:
-		TargetTypes: Ground, Building, C4, Defense
 	RevealOnFire:
 	EditorTilesetFilter:
 		Categories: Defense
-	-CommandBarBlacklist:
 
 ^Train:
 	Inherits@1: ^EmpDisable
@@ -1145,7 +994,7 @@
 		Description: Automated barrier that opens for allied units.
 	HitShape:
 		Type: Rectangle
-			LocalYaw: -128
+			LocalYaw: 128
 			TopLeft: -512, -512
 			BottomRight: 512, 512
 			VerticalTopOffset: 768
@@ -1154,7 +1003,6 @@
 
 ^Gate_A:
 	Inherits: ^Gate
-	Inherits@shape: ^3x1Shape
 	Health:
 	Gate:
 		Dimensions: 3,1
@@ -1163,10 +1011,13 @@
 		WallConnections: -1,0, 3,0
 	LineBuildNode:
 		Connections: -1,0, 1,0
+	HitShape:
+		Type: Rectangle
+			TopLeft: -512, -1536
+			BottomRight: 512, 1536
 
 ^Gate_B:
 	Inherits: ^Gate
-	Inherits@shape: ^1x3Shape
 	Health:
 	Gate:
 		Dimensions: 1,3
@@ -1175,6 +1026,10 @@
 		WallConnections: 0,-1, 0,3
 	LineBuildNode:
 		Connections: 0,-1, 0,1
+	HitShape:
+		Type: Rectangle
+			TopLeft: -1536, -512
+			BottomRight: 1536, 512
 
 ^HealsOnTiberium:
 	DamagedByTerrain:

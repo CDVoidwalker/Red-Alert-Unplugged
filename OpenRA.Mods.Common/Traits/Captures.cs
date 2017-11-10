@@ -18,7 +18,7 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.Common.Traits
 {
 	[Desc("This actor can capture other actors which have the Capturable: trait.")]
-	public class CapturesInfo : ConditionalTraitInfo
+	public class CapturesInfo : ITraitInfo
 	{
 		[Desc("Types of actors that it can capture, as long as the type also exists in the Capturable Type: trait.")]
 		public readonly HashSet<string> CaptureTypes = new HashSet<string> { "building" };
@@ -41,21 +41,22 @@ namespace OpenRA.Mods.Common.Traits
 
 		[VoiceReference] public readonly string Voice = "Action";
 
-		public override object Create(ActorInitializer init) { return new Captures(this); }
+		public object Create(ActorInitializer init) { return new Captures(this); }
 	}
 
-	public class Captures : ConditionalTrait<CapturesInfo>, IIssueOrder, IResolveOrder, IOrderVoice
+	public class Captures : IIssueOrder, IResolveOrder, IOrderVoice
 	{
+		public readonly CapturesInfo Info;
+
 		public Captures(CapturesInfo info)
-			: base(info) { }
+		{
+			Info = info;
+		}
 
 		public IEnumerable<IOrderTargeter> Orders
 		{
 			get
 			{
-				if (IsTraitDisabled)
-					yield break;
-
 				yield return new CaptureOrderTargeter(Info);
 			}
 		}
@@ -65,7 +66,10 @@ namespace OpenRA.Mods.Common.Traits
 			if (order.OrderID != "CaptureActor")
 				return null;
 
-			return new Order(order.OrderID, self, target, queued);
+			if (target.Type == TargetType.FrozenActor)
+				return new Order(order.OrderID, self, queued) { ExtraData = target.FrozenActor.ID };
+
+			return new Order(order.OrderID, self, queued) { TargetActor = target.Actor };
 		}
 
 		public string VoicePhraseForOrder(Actor self, Order order)
@@ -75,7 +79,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void ResolveOrder(Actor self, Order order)
 		{
-			if (order.OrderString != "CaptureActor" || IsTraitDisabled)
+			if (order.OrderString != "CaptureActor")
 				return;
 
 			var target = self.ResolveFrozenActorOrder(order, Color.Red);

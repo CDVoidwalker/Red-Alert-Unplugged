@@ -33,15 +33,11 @@ namespace OpenRA.Mods.Common.Traits.Render
 			spriteBody = self.TraitOrDefault<WithSpriteBody>();
 		}
 
-		void INotifyRepair.BeforeRepair(Actor self, Actor target) { }
-
-		void INotifyRepair.RepairTick(Actor self, Actor target)
+		void INotifyRepair.Repairing(Actor self, Actor target)
 		{
 			if (buildComplete && spriteBody != null && !IsTraitDisabled)
-				spriteBody.PlayCustomAnimation(self, Info.Sequence);
+				spriteBody.PlayCustomAnimation(self, Info.Sequence, () => spriteBody.CancelCustomAnimation(self));
 		}
-
-		void INotifyRepair.AfterRepair(Actor self, Actor target) { }
 
 		void INotifyBuildComplete.BuildingComplete(Actor self)
 		{

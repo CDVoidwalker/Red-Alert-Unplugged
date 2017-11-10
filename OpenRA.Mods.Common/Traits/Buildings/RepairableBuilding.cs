@@ -90,7 +90,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		int remainingTicks;
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (IsTraitDisabled)
 			{

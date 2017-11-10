@@ -30,15 +30,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public WeaponInfo DemolishWeaponInfo { get; private set; }
 
-		public void RulesetLoaded(Ruleset rules, ActorInfo ai)
-		{
-			WeaponInfo weapon;
-			var weaponToLower = (DemolishWeapon ?? string.Empty).ToLowerInvariant();
-			if (!rules.Weapons.TryGetValue(weaponToLower, out weapon))
-				throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(weaponToLower));
-
-			DemolishWeaponInfo = weapon;
-		}
+		public void RulesetLoaded(Ruleset rules, ActorInfo ai) { DemolishWeaponInfo = rules.Weapons[DemolishWeapon.ToLowerInvariant()]; }
 
 		public object Create(ActorInitializer init) { return new GroundLevelBridge(init.Self, this); }
 	}

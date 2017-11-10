@@ -70,7 +70,7 @@ namespace OpenRA.Mods.Common.Traits
 			finalPosition = init.World.Map.CenterOfCell(TopLeft);
 		}
 
-		void INotifyCreated.Created(Actor self)
+		public void Created(Actor self)
 		{
 			var distance = (finalPosition - CenterPosition).Length;
 			if (dragSpeed > 0 && distance > 0)
@@ -118,12 +118,12 @@ namespace OpenRA.Mods.Common.Traits
 			self.World.UpdateMaps(self, this);
 		}
 
-		void INotifyAddedToWorld.AddedToWorld(Actor self)
+		public void AddedToWorld(Actor self)
 		{
 			self.World.AddToMaps(self, this);
 		}
 
-		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
+		public void RemovedFromWorld(Actor self)
 		{
 			self.World.RemoveFromMaps(self, this);
 		}

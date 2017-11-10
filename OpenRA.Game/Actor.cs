@@ -329,9 +329,6 @@ namespace OpenRA
 			health.Kill(this, attacker);
 		}
 
-		/// <summary>
-		/// DEPRECATED! See <see cref="http://bugs.openra.net/10237"/>. Use conditional traits and IsTraitDisabled instead.
-		/// </summary>
 		public bool IsDisabled()
 		{
 			// PERF: Avoid LINQ.

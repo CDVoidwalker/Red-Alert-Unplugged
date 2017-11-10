@@ -49,7 +49,7 @@ namespace OpenRA.Mods.D2k.Traits
 			buildingInfo = self.Info.TraitInfo<BuildingInfo>();
 		}
 
-		void INotifyAddedToWorld.AddedToWorld(Actor self)
+		public void AddedToWorld(Actor self)
 		{
 			var map = self.World.Map;
 

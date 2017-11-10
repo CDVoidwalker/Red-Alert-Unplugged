@@ -63,7 +63,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			var wsb = self.TraitOrDefault<WithSpriteBody>();
 			if (wsb != null && wsb.DefaultAnimation.HasSequence(info.Sequence))
-				wsb.PlayCustomAnimation(self, info.Sequence);
+				wsb.PlayCustomAnimation(self, info.Sequence, () => wsb.CancelCustomAnimation(self));
 
 			Game.Sound.Play(SoundType.World, info.OnFireSound, self.World.Map.CenterOfCell(order.TargetLocation));
 
@@ -120,7 +120,7 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				world.CancelInputMode();
 				if (mi.Button == MouseButton.Left && power.UnitsInRange(cell).Any())
-					yield return new Order(order, manager.Self, Target.FromCell(world, cell), false) { SuppressVisualFeedback = true };
+					yield return new Order(order, manager.Self, false) { TargetLocation = cell, SuppressVisualFeedback = true };
 			}
 
 			public void Tick(World world)

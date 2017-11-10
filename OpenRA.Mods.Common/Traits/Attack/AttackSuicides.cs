@@ -50,7 +50,10 @@ namespace OpenRA.Mods.Common.Traits
 			if (order.OrderID != "DetonateAttack" && order.OrderID != "Detonate")
 				return null;
 
-			return new Order(order.OrderID, self, target, queued);
+			if (target.Type == TargetType.FrozenActor)
+				return new Order(order.OrderID, self, queued) { ExtraData = target.FrozenActor.ID };
+
+			return new Order(order.OrderID, self, queued) { TargetActor = target.Actor };
 		}
 
 		Order IIssueDeployOrder.IssueDeployOrder(Actor self)

@@ -30,26 +30,26 @@ namespace OpenRA.Mods.Common.Scripting
 	{
 		readonly LuaScriptInfo info;
 		ScriptContext context;
-		bool disposed;
 
 		public LuaScript(LuaScriptInfo info)
 		{
 			this.info = info;
 		}
 
-		void IWorldLoaded.WorldLoaded(World world, WorldRenderer worldRenderer)
+		public void WorldLoaded(World world, WorldRenderer worldRenderer)
 		{
 			var scripts = info.Scripts ?? Enumerable.Empty<string>();
 			context = new ScriptContext(world, worldRenderer, scripts);
 			context.WorldLoaded();
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			context.Tick(self);
 		}
 
-		void INotifyActorDisposing.Disposing(Actor self)
+		bool disposed;
+		public void Disposing(Actor self)
 		{
 			if (disposed)
 				return;

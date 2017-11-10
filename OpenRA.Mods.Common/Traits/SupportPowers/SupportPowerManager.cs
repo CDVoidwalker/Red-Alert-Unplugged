@@ -96,7 +96,7 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			foreach (var power in Powers.Values)
 				power.Tick();
@@ -280,7 +280,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			world.CancelInputMode();
 			if (mi.Button == expectedButton && world.Map.Contains(cell))
-				yield return new Order(order, manager.Self, Target.FromCell(world, cell), false) { SuppressVisualFeedback = true };
+				yield return new Order(order, manager.Self, false) { TargetLocation = cell, SuppressVisualFeedback = true };
 		}
 
 		public virtual void Tick(World world)

@@ -100,7 +100,6 @@ harvester:
 
 trike:
 	Inherits: ^Vehicle
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Vehicle
@@ -141,7 +140,6 @@ trike:
 
 quad:
 	Inherits: ^Vehicle
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Vehicle
@@ -177,7 +175,6 @@ quad:
 
 siege_tank:
 	Inherits: ^Tank
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Armor
@@ -225,7 +222,6 @@ siege_tank:
 
 missile_tank:
 	Inherits: ^Tank
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Tooltip:
 		Name: Missile Tank
@@ -265,7 +261,6 @@ missile_tank:
 
 sonic_tank:
 	Inherits: ^Vehicle
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Armor
@@ -301,7 +296,6 @@ sonic_tank:
 
 devastator:
 	Inherits: ^Tank
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Armor
@@ -322,9 +316,6 @@ devastator:
 		TurnSpeed: 3
 		Speed: 31
 		Crushes: crate, infantry, spicebloom, wall
-		RequiresCondition: !overload && !notmobile
-	AutoCarryable:
-		RequiresCondition: !overload
 	RevealsShroud:
 		Range: 4c768
 	Armament:
@@ -337,26 +328,8 @@ devastator:
 	Explodes:
 		Weapon: UnitExplodeLarge
 		EmptyWeapon: UnitExplodeLarge
-		RequiresCondition: !overload
 	SpawnActorOnDeath:
 		Actor: devastator.husk
-	Explodes@OVERLOAD:
-		Weapon: PlasmaExplosion
-		EmptyWeapon: PlasmaExplosion
-		RequiresCondition: meltdown
-	GrantConditionOnDeploy@REACTOR:
-		DeployedCondition: overload
-		CanUndeploy: false
-	WithIdleOverlay@OVERLOAD:
-		Sequence: active
-		RequiresCondition: overload
-	WithIdleOverlay@OVERLOAD2:
-		Sequence: active-2
-		RequiresCondition: overload
-	KillsSelf@MELTDOWN:
-		Delay: 240
-		RequiresCondition: overload
-		GrantsCondition: meltdown
 	AttractsWorms:
 		Intensity: 700
 	SelectionDecorations:
@@ -368,7 +341,6 @@ devastator:
 
 raider:
 	Inherits: ^Vehicle
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Vehicle
@@ -421,6 +393,8 @@ stealth_raider:
 		InitialDelay: 45
 		CloakDelay: 90
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Dock, Damage, Heal
+		CloakSound: STEALTH1.WAV
+		UncloakSound: STEALTH2.WAV
 		IsPlayerPalette: true
 		RequiresCondition: !cloak-force-disabled
 	GrantConditionOnDamageState@UNCLOAK:
@@ -433,7 +407,6 @@ stealth_raider:
 
 deviator:
 	Inherits: ^Tank
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
 		Cost: 1000
@@ -471,7 +444,6 @@ deviator:
 
 ^combat_tank:
 	Inherits: ^Tank
-	Inherits@GAINSEXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Armor

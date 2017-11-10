@@ -9,8 +9,6 @@
  */
 #endregion
 
-using System.Linq;
-using OpenRA.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
@@ -21,7 +19,7 @@ namespace OpenRA.Mods.Common.Activities
 		readonly Actor actor;
 		readonly Building building;
 		readonly Capturable capturable;
-		readonly Captures[] captures;
+		readonly CapturesInfo capturesInfo;
 		readonly Health health;
 
 		public CaptureActor(Actor self, Actor target)
@@ -29,7 +27,7 @@ namespace OpenRA.Mods.Common.Activities
 		{
 			actor = target;
 			building = actor.TraitOrDefault<Building>();
-			captures = self.TraitsImplementing<Captures>().ToArray();
+			capturesInfo = self.Info.TraitInfo<CapturesInfo>();
 			capturable = target.Trait<Capturable>();
 			health = actor.Trait<Health>();
 		}
@@ -52,12 +50,9 @@ namespace OpenRA.Mods.Common.Activities
 				if (building != null && building.Locked)
 					building.Unlock();
 
-				var activeCaptures = captures.FirstOrDefault(c => !c.IsTraitDisabled);
-
-				if (actor.IsDead || capturable.BeingCaptured || activeCaptures == null)
+				if (actor.IsDead || capturable.BeingCaptured)
 					return;
 
-				var capturesInfo = activeCaptures.Info;
 				var lowEnoughHealth = health.HP <= capturable.Info.CaptureThreshold * health.MaxHP / 100;
 				if (!capturesInfo.Sabotage || lowEnoughHealth || actor.Owner.NonCombatant)
 				{
@@ -86,14 +81,6 @@ namespace OpenRA.Mods.Common.Activities
 
 				self.Dispose();
 			});
-		}
-
-		public override Activity Tick(Actor self)
-		{
-			if (captures.All(c => c.IsTraitDisabled))
-				Cancel(self);
-
-			return base.Tick(self);
 		}
 	}
 }
