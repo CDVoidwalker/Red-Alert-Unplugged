@@ -1,6 +1,5 @@
 SS:
 	Inherits: ^Ship
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Ship
 		BuildAtProductionType: Submarine
