@@ -52,7 +52,8 @@ namespace OpenRA.Mods.Common.Widgets
 
 				attackMoveButton.GetKey = _ => ks.AttackMoveKey;
 				attackMoveButton.IsDisabled = () => { UpdateStateIfNecessary(); return attackMoveDisabled; };
-				attackMoveButton.IsHighlighted = () => world.OrderGenerator is AttackMoveOrderGenerator;
+				attackMoveButton.IsHighlighted = () => world.OrderGenerator is GenericSelectTarget
+					&& ((GenericSelectTarget)world.OrderGenerator).OrderName == "AttackMove";
 
 				Action<bool> toggle = allowCancel =>
 				{
@@ -62,7 +63,8 @@ namespace OpenRA.Mods.Common.Widgets
 							world.CancelInputMode();
 					}
 					else
-						world.OrderGenerator = new AttackMoveOrderGenerator(selectedActors, Game.Settings.Game.MouseButtonPreference.Action);
+						world.OrderGenerator = new GenericSelectTarget(selectedActors,
+							"AttackMove", "attackmove", Game.Settings.Game.MouseButtonPreference.Action);
 				};
 
 				attackMoveButton.OnClick = () => toggle(true);
@@ -91,9 +93,7 @@ namespace OpenRA.Mods.Common.Widgets
 				BindButtonIcon(forceAttackButton);
 
 				forceAttackButton.IsDisabled = () => { UpdateStateIfNecessary(); return forceAttackDisabled; };
-				forceAttackButton.IsHighlighted = () => !forceAttackButton.IsDisabled() && IsForceModifiersActive(Modifiers.Ctrl)
-					&& !(world.OrderGenerator is AttackMoveOrderGenerator);
-
+				forceAttackButton.IsHighlighted = () => !forceAttackButton.IsDisabled() && IsForceModifiersActive(Modifiers.Ctrl);
 				forceAttackButton.OnClick = () =>
 				{
 					if (forceAttackButton.IsHighlighted())
@@ -178,23 +178,6 @@ namespace OpenRA.Mods.Common.Widgets
 						world.CancelInputMode();
 					else
 						world.OrderGenerator = new ForceModifiersOrderGenerator(Modifiers.Shift, false);
-				};
-			}
-
-			var keyOverrides = widget.GetOrNull<LogicKeyListenerWidget>("MODIFIER_OVERRIDES");
-			if (keyOverrides != null)
-			{
-				keyOverrides.OnKeyPress = ki =>
-				{
-					// HACK: enable attack move to be triggered if the ctrl key is pressed
-					var modified = new Hotkey(ki.Key, ki.Modifiers & ~Modifiers.Ctrl);
-					if (!attackMoveDisabled && attackMoveButton.Key == modified)
-					{
-						attackMoveButton.OnKeyPress(ki);
-						return true;
-					}
-
-					return false;
 				};
 			}
 		}

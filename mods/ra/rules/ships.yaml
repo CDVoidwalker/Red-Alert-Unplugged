@@ -1,5 +1,6 @@
 SS:
 	Inherits: ^Ship
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Buildable:
 		Queue: Ship
 		BuildAtProductionType: Submarine
@@ -65,7 +66,7 @@ SS:
 
 MSUB:
 	Inherits: ^Ship
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAll
 	Buildable:
 		Queue: Ship
 		BuildAtProductionType: Submarine
@@ -132,7 +133,7 @@ MSUB:
 
 DD:
 	Inherits: ^Ship
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAll
 	Buildable:
 		Queue: Ship
 		BuildAtProductionType: Boat
@@ -181,7 +182,7 @@ DD:
 
 CA:
 	Inherits: ^Ship
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Buildable:
 		Queue: Ship
 		BuildAtProductionType: Boat
@@ -277,7 +278,7 @@ LST:
 
 PT:
 	Inherits: ^Ship
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Buildable:
 		Queue: Ship
 		BuildAtProductionType: Boat
