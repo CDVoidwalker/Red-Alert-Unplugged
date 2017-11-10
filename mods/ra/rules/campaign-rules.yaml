@@ -34,7 +34,6 @@ E7.noautotarget:
 	Inherits: E7
 	-AutoTarget:
 	-AutoTargetPriority@DEFAULT:
-	-AutoTargetPriority@ATTACKANYTHING:
 	RenderSprites:
 		Image: E7
 
