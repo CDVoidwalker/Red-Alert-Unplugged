@@ -98,19 +98,14 @@ namespace OpenRA.Mods.Common.Traits
 			TurretFacing = TurretFacingFromInit(init, info.InitialFacing, info.Turret)();
 		}
 
-		void INotifyCreated.Created(Actor self)
+		public void Created(Actor self)
 		{
 			attack = self.TraitOrDefault<AttackTurreted>();
 			facing = self.TraitOrDefault<IFacing>();
 			body = self.Trait<BodyOrientation>();
 		}
 
-		void ITick.Tick(Actor self)
-		{
-			Tick(self);
-		}
-
-		protected virtual void Tick(Actor self)
+		public virtual void Tick(Actor self)
 		{
 			// NOTE: FaceTarget is called in AttackTurreted.CanAttack if the turret has a target.
 			if (attack != null)

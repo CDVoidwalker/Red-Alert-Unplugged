@@ -46,7 +46,6 @@ namespace OpenRA.Mods.D2k.Traits
 		public bool IsAttacking;
 
 		int targetCountdown;
-		bool disposed;
 
 		public Sandworm(Actor self, SandwormInfo info)
 			: base(self, info)
@@ -69,7 +68,7 @@ namespace OpenRA.Mods.D2k.Traits
 			self.QueueActivity(mobile.MoveWithinRange(Target.FromCell(self.World, targetCell, SubCell.Any), WDist.FromCells(1)));
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (--targetCountdown > 0 || IsAttacking || !self.IsInWorld)
 				return;
@@ -135,7 +134,8 @@ namespace OpenRA.Mods.D2k.Traits
 			IsMovingTowardTarget = true;
 		}
 
-		void INotifyActorDisposing.Disposing(Actor self)
+		bool disposed;
+		public void Disposing(Actor self)
 		{
 			if (disposed)
 				return;

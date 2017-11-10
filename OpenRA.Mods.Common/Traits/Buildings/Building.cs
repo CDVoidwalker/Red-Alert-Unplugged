@@ -36,8 +36,7 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Where you are allowed to place the building (Water, Clear, ...)")]
 		public readonly HashSet<string> TerrainTypes = new HashSet<string>();
 
-		[Desc("The range to the next building it can be constructed. Set it higher for walls.",
-			"Set to '-1' to disable adjacency checks.")]
+		[Desc("The range to the next building it can be constructed. Set it higher for walls.")]
 		public readonly int Adjacent = 2;
 
 		[Desc("x means cell is blocked, capital X means blocked but not counting as targetable, ",
@@ -154,11 +153,7 @@ namespace OpenRA.Mods.Common.Traits
 		public Actor FindBaseProvider(World world, Player p, CPos topLeft)
 		{
 			var center = world.Map.CenterOfCell(topLeft) + CenterOffset(world);
-			var mapBuildRadius = world.WorldActor.Trait<MapBuildRadius>();
-			var allyBuildEnabled = mapBuildRadius.AllyBuildRadiusEnabled;
-
-			if (!mapBuildRadius.BuildRadiusEnabled)
-				return null;
+			var allyBuildEnabled = world.WorldActor.Trait<MapBuildRadius>().AllyBuildRadiusEnabled;
 
 			foreach (var bp in world.ActorsWithTrait<BaseProvider>())
 			{
@@ -177,11 +172,10 @@ namespace OpenRA.Mods.Common.Traits
 
 		public virtual bool IsCloseEnoughToBase(World world, Player p, string buildingName, CPos topLeft)
 		{
-			var mapBuildRadius = world.WorldActor.Trait<MapBuildRadius>();
-			if (Adjacent < 0 || p.PlayerActor.Trait<DeveloperMode>().BuildAnywhere)
+			if (p.PlayerActor.Trait<DeveloperMode>().BuildAnywhere)
 				return true;
 
-			if (mapBuildRadius.BuildRadiusEnabled && RequiresBaseProvider && FindBaseProvider(world, p, topLeft) == null)
+			if (RequiresBaseProvider && FindBaseProvider(world, p, topLeft) == null)
 				return false;
 
 			var buildingMaxBounds = Dimensions;
@@ -191,7 +185,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			var nearnessCandidates = new List<CPos>();
 			var bi = world.WorldActor.Trait<BuildingInfluence>();
-			var allyBuildEnabled = mapBuildRadius.AllyBuildRadiusEnabled;
+			var allyBuildEnabled = world.WorldActor.Trait<MapBuildRadius>().AllyBuildRadiusEnabled;
 
 			for (var y = scanStart.Y; y < scanEnd.Y; y++)
 			{
@@ -242,16 +236,13 @@ namespace OpenRA.Mods.Common.Traits
 		}
 	}
 
-	public class Building : IOccupySpace, ITargetableCells, INotifySold, INotifyTransform, ISync, INotifyCreated,
-		INotifyAddedToWorld, INotifyRemovedFromWorld, INotifyDemolition
+	public class Building : IOccupySpace, ITargetableCells, INotifySold, INotifyTransform, ISync, INotifyCreated, INotifyAddedToWorld, INotifyRemovedFromWorld
 	{
-		public readonly bool SkipMakeAnimation;
 		public readonly BuildingInfo Info;
 		public bool BuildComplete { get; private set; }
-
 		[Sync] readonly CPos topLeft;
 		readonly Actor self;
-		readonly BuildingInfluence influence;
+		public readonly bool SkipMakeAnimation;
 
 		Pair<CPos, SubCell>[] occupiedCells;
 		Pair<CPos, SubCell>[] targetableCells;
@@ -278,7 +269,6 @@ namespace OpenRA.Mods.Common.Traits
 			self = init.Self;
 			topLeft = init.Get<LocationInit, CPos>();
 			Info = info;
-			influence = self.World.WorldActor.Trait<BuildingInfluence>();
 
 			occupiedCells = Info.UnpathableTiles(TopLeft)
 				.Select(c => Pair.New(c, SubCell.FullCell)).ToArray();
@@ -292,7 +282,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public IEnumerable<Pair<CPos, SubCell>> OccupiedCells() { return occupiedCells; }
 
-		IEnumerable<Pair<CPos, SubCell>> ITargetableCells.TargetableCells() { return targetableCells; }
+		public IEnumerable<Pair<CPos, SubCell>> TargetableCells() { return targetableCells; }
 
 		void INotifyCreated.Created(Actor self)
 		{
@@ -300,12 +290,7 @@ namespace OpenRA.Mods.Common.Traits
 				NotifyBuildingComplete(self);
 		}
 
-		void INotifyAddedToWorld.AddedToWorld(Actor self)
-		{
-			AddedToWorld(self);
-		}
-
-		protected virtual void AddedToWorld(Actor self)
+		public virtual void AddedToWorld(Actor self)
 		{
 			if (Info.RemoveSmudgesOnBuild)
 				RemoveSmudges();
@@ -315,8 +300,6 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (!self.Bounds.Size.IsEmpty)
 				self.World.ScreenMap.Add(self);
-
-			influence.AddInfluence(self, Info.Tiles(self.Location));
 		}
 
 		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
@@ -326,8 +309,6 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (!self.Bounds.Size.IsEmpty)
 				self.World.ScreenMap.Remove(self);
-
-			influence.RemoveInfluence(self, Info.Tiles(self.Location));
 		}
 
 		public void NotifyBuildingComplete(Actor self)
@@ -340,11 +321,6 @@ namespace OpenRA.Mods.Common.Traits
 
 			foreach (var notify in self.TraitsImplementing<INotifyBuildComplete>())
 				notify.BuildingComplete(self);
-		}
-
-		void INotifyDemolition.Demolishing(Actor self)
-		{
-			Lock();
 		}
 
 		void INotifySold.Selling(Actor self)

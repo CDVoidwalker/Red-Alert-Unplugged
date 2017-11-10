@@ -149,6 +149,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			var playButton = panel.GetOrNull<ButtonWidget>("BUTTON_PLAY");
 			if (playButton != null)
 			{
+				playButton.Key = new Hotkey(Keycode.SPACE, Modifiers.None);
 				playButton.OnClick = () =>
 				{
 					if (isVideoLoaded)
@@ -163,6 +164,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			var pauseButton = panel.GetOrNull<ButtonWidget>("BUTTON_PAUSE");
 			if (pauseButton != null)
 			{
+				pauseButton.Key = new Hotkey(Keycode.SPACE, Modifiers.None);
 				pauseButton.OnClick = () =>
 				{
 					if (isVideoLoaded)
@@ -177,6 +179,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			var stopButton = panel.GetOrNull<ButtonWidget>("BUTTON_STOP");
 			if (stopButton != null)
 			{
+				stopButton.Key = new Hotkey(Keycode.RETURN, Modifiers.None);
 				stopButton.OnClick = () =>
 				{
 					if (isVideoLoaded)
@@ -193,6 +196,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			var nextButton = panel.GetOrNull<ButtonWidget>("BUTTON_NEXT");
 			if (nextButton != null)
 			{
+				nextButton.Key = new Hotkey(Keycode.RIGHT, Modifiers.None);
 				nextButton.OnClick = () =>
 				{
 					if (!isVideoLoaded)
@@ -205,6 +209,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			var prevButton = panel.GetOrNull<ButtonWidget>("BUTTON_PREV");
 			if (prevButton != null)
 			{
+				prevButton.Key = new Hotkey(Keycode.LEFT, Modifiers.None);
 				prevButton.OnClick = () =>
 				{
 					if (!isVideoLoaded)

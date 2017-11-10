@@ -31,20 +31,16 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("The condition to grant to self while scanning for targets during an assault-move.")]
 		public readonly string AssaultMoveScanCondition = null;
 
-		[Desc("Can the actor be ordered to move in to shroud?")]
-		public readonly bool MoveIntoShroud = true;
-
 		public object Create(ActorInitializer init) { return new AttackMove(init.Self, this); }
 	}
 
 	class AttackMove : INotifyCreated, ITick, IResolveOrder, IOrderVoice, INotifyIdle, ISync
 	{
-		public readonly AttackMoveInfo Info;
-
 		[Sync] public CPos _targetLocation { get { return TargetLocation.HasValue ? TargetLocation.Value : CPos.Zero; } }
 		public CPos? TargetLocation = null;
 
 		readonly IMove move;
+		readonly AttackMoveInfo info;
 
 		ConditionManager conditionManager;
 		int attackMoveToken = ConditionManager.InvalidConditionToken;
@@ -54,7 +50,7 @@ namespace OpenRA.Mods.Common.Traits
 		public AttackMove(Actor self, AttackMoveInfo info)
 		{
 			move = self.Trait<IMove>();
-			Info = info;
+			this.info = info;
 		}
 
 		void INotifyCreated.Created(Actor self)
@@ -71,35 +67,33 @@ namespace OpenRA.Mods.Common.Traits
 			var attackActive = activity != null && !assaultMoving;
 			var assaultActive = activity != null && assaultMoving;
 
-			if (attackActive && attackMoveToken == ConditionManager.InvalidConditionToken && !string.IsNullOrEmpty(Info.AttackMoveScanCondition))
-				attackMoveToken = conditionManager.GrantCondition(self, Info.AttackMoveScanCondition);
+			if (attackActive && attackMoveToken == ConditionManager.InvalidConditionToken && !string.IsNullOrEmpty(info.AttackMoveScanCondition))
+				attackMoveToken = conditionManager.GrantCondition(self, info.AttackMoveScanCondition);
 			else if (!attackActive && attackMoveToken != ConditionManager.InvalidConditionToken)
 				attackMoveToken = conditionManager.RevokeCondition(self, attackMoveToken);
 
-			if (assaultActive && assaultMoveToken == ConditionManager.InvalidConditionToken && !string.IsNullOrEmpty(Info.AssaultMoveScanCondition))
-				assaultMoveToken = conditionManager.GrantCondition(self, Info.AssaultMoveScanCondition);
+			if (assaultActive && assaultMoveToken == ConditionManager.InvalidConditionToken && !string.IsNullOrEmpty(info.AssaultMoveScanCondition))
+				assaultMoveToken = conditionManager.GrantCondition(self, info.AssaultMoveScanCondition);
 			else if (!assaultActive && assaultMoveToken != ConditionManager.InvalidConditionToken)
 				assaultMoveToken = conditionManager.RevokeCondition(self, assaultMoveToken);
 		}
 
-		string IOrderVoice.VoicePhraseForOrder(Actor self, Order order)
+		public string VoicePhraseForOrder(Actor self, Order order)
 		{
-			if (!Info.MoveIntoShroud && !self.Owner.Shroud.IsExplored(order.TargetLocation))
-				return null;
-
 			if (order.OrderString == "AttackMove" || order.OrderString == "AssaultMove")
-				return Info.Voice;
+				return info.Voice;
 
 			return null;
 		}
 
 		void Activate(Actor self, bool assaultMove)
 		{
+			self.CancelActivity();
 			assaultMoving = assaultMove;
 			self.QueueActivity(new AttackMoveActivity(self, move.MoveTo(TargetLocation.Value, 1)));
 		}
 
-		void INotifyIdle.TickIdle(Actor self)
+		public void TickIdle(Actor self)
 		{
 			// This might cause the actor to be stuck if the target location is unreachable
 			if (TargetLocation.HasValue && self.Location != TargetLocation.Value)
@@ -112,12 +106,6 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (order.OrderString == "AttackMove" || order.OrderString == "AssaultMove")
 			{
-				if (!order.Queued)
-					self.CancelActivity();
-
-				if (!Info.MoveIntoShroud && !self.Owner.Shroud.IsExplored(order.TargetLocation))
-					return;
-
 				TargetLocation = move.NearestMoveableCell(order.TargetLocation);
 				self.SetTargetLine(Target.FromCell(self.World, TargetLocation.Value), Color.Red);
 				Activate(self, order.OrderString == "AssaultMove");
@@ -160,22 +148,14 @@ namespace OpenRA.Mods.Common.Traits
 				// Cells outside the playable area should be clamped to the edge for consistency with move orders
 				cell = world.Map.Clamp(cell);
 				foreach (var s in subjects)
-					yield return new Order(orderName, s.Actor, Target.FromCell(world, cell), queued);
+					yield return new Order(orderName, s.Actor, queued) { TargetLocation = cell };
 			}
 		}
 
 		public override string GetCursor(World world, CPos cell, int2 worldPixel, MouseInput mi)
 		{
 			var prefix = mi.Modifiers.HasModifier(Modifiers.Ctrl) ? "assaultmove" : "attackmove";
-
-			if (world.Map.Contains(cell))
-			{
-				var explored = subjects.First().Actor.Owner.Shroud.IsExplored(cell);
-				var blocked = !explored && subjects.Any(a => !a.Trait.Info.MoveIntoShroud);
-				return blocked ? prefix + "-blocked" : prefix;
-			}
-
-			return prefix + "-blocked";
+			return world.Map.Contains(cell) ? prefix : prefix + "-blocked";
 		}
 
 		public override bool InputOverridesSelection(World world, int2 xy, MouseInput mi)

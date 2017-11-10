@@ -448,8 +448,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 					{ "CycleStatusBarsKey", "Cycle status bars display" },
 					{ "TogglePixelDoubleKey", "Toggle pixel doubling" },
 					{ "ToggleMuteKey", "Toggle audio mute" },
-					{ "TogglePlayerStanceColorKey", "Toggle player stance colors" },
-					{ "TakeScreenshotKey", "Take screenshot" }
+					{ "TogglePlayerStanceColorsKey", "Toggle player stance colors" }
 				};
 
 				var header = ScrollItemWidget.Setup(hotkeyHeader, returnTrue, doNothing);
@@ -464,24 +463,24 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			{
 				var hotkeys = new Dictionary<string, string>()
 				{
-					{ "MapScrollUpKey", "Scroll up" },
-					{ "MapScrollDownKey", "Scroll down" },
-					{ "MapScrollLeftKey", "Scroll left" },
-					{ "MapScrollRightKey", "Scroll right" },
+					{ "MapScrollUp", "Scroll up" },
+					{ "MapScrollDown", "Scroll down" },
+					{ "MapScrollLeft", "Scroll left" },
+					{ "MapScrollRight", "Scroll right" },
 
-					{ "MapJumpToTopEdgeKey", "Jump to top edge" },
-					{ "MapJumpToBottomEdgeKey", "Jump to bottom edge" },
-					{ "MapJumpToLeftEdgeKey", "Jump to left edge" },
-					{ "MapJumpToRightEdgeKey", "Jump to right edge" },
+					{ "MapPushTop", "Jump to top edge" },
+					{ "MapPushBottom", "Jump to bottom edge" },
+					{ "MapPushLeftEdge", "Jump to left edge" },
+					{ "MapPushRightEdge", "Jump to right edge" },
 
-					{ "MapBookmarkSave01Key", "Record bookmark #1" },
-					{ "MapBookmarkRestore01Key", "Jump to bookmark #1" },
-					{ "MapBookmarkSave02Key", "Record bookmark #2" },
-					{ "MapBookmarkRestore02Key", "Jump to bookmark #2" },
-					{ "MapBookmarkSave03Key", "Record bookmark #3" },
-					{ "MapBookmarkRestore03Key", "Jump to bookmark #3" },
-					{ "MapBookmarkSave04Key", "Record bookmark #4" },
-					{ "MapBookmarkRestore04Key", "Jump to bookmark #4" }
+					{ "ViewPortBookmarkSaveSlot1", "Record bookmark #1" },
+					{ "ViewPortBookmarkUseSlot1", "Jump to bookmark #1" },
+					{ "ViewPortBookmarkSaveSlot2", "Record bookmark #2" },
+					{ "ViewPortBookmarkUseSlot2", "Jump to bookmark #2" },
+					{ "ViewPortBookmarkSaveSlot3", "Record bookmark #3" },
+					{ "ViewPortBookmarkUseSlot3", "Jump to bookmark #3" },
+					{ "ViewPortBookmarkSaveSlot4", "Record bookmark #4" },
+					{ "ViewPortBookmarkUseSlot4", "Jump to bookmark #4" }
 				};
 
 				var header = ScrollItemWidget.Setup(hotkeyHeader, returnTrue, doNothing);
@@ -496,18 +495,13 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			{
 				var hotkeys = new Dictionary<string, string>()
 				{
-					{ "ObserverCombinedViewKey", "All Players" },
-					{ "ObserverWorldViewKey", "Disable Shroud" },
+					{ "ObserverCombinedView", "All Players" },
+					{ "ObserverWorldView", "Disable Shroud" },
 					{ "PauseKey", "Pause/Play" },
 					{ "ReplaySpeedSlowKey", "Slow speed" },
 					{ "ReplaySpeedRegularKey", "Regular speed" },
 					{ "ReplaySpeedFastKey", "Fast speed" },
-					{ "ReplaySpeedMaxKey", "Maximum speed" },
-					{ "StatisticsBasicKey", "Basic statistics" },
-					{ "StatisticsEconomyKey", "Economy statistics" },
-					{ "StatisticsProductionKey", "Production statistics" },
-					{ "StatisticsCombatKey", "Combat statistics" },
-					{ "StatisticsGraphKey", "Statistics graph" }
+					{ "ReplaySpeedMaxKey", "Maximum speed" }
 				};
 
 				var header = ScrollItemWidget.Setup(hotkeyHeader, returnTrue, doNothing);
@@ -595,14 +589,31 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 					BindHotkeyPref(kv, ks, productionTemplate, hotkeyList);
 			}
 
+			// Developer
+			{
+				var hotkeys = new Dictionary<string, string>()
+				{
+					{ "DevReloadChromeKey", "Reload Chrome" },
+					{ "HideUserInterfaceKey", "Hide UI" },
+					{ "TakeScreenshotKey", "Take screenshot" }
+				};
+
+				var header = ScrollItemWidget.Setup(hotkeyHeader, returnTrue, doNothing);
+				header.Get<LabelWidget>("LABEL").GetText = () => "Developer Commands";
+				hotkeyList.AddChild(header);
+
+				foreach (var kv in hotkeys)
+					BindHotkeyPref(kv, ks, developerTemplate, hotkeyList);
+			}
+
 			// Music
 			{
 				var hotkeys = new Dictionary<string, string>()
 				{
-					{ "StopMusicKey", "Stop" },
-					{ "PauseMusicKey", "Pause or Resume" },
-					{ "PrevMusicKey", "Previous" },
-					{ "NextMusicKey", "Next" }
+					{ "NextTrack", "Next" },
+					{ "PreviousTrack", "Previous" },
+					{ "StopMusic", "Stop" },
+					{ "PauseMusic", "Pause or Resume" }
 				};
 
 				var header = ScrollItemWidget.Setup(hotkeyHeader, returnTrue, doNothing);
@@ -663,7 +674,6 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			BindCheckboxPref(panel, "FETCH_NEWS_CHECKBOX", gs, "FetchNews");
 			BindCheckboxPref(panel, "LUADEBUG_CHECKBOX", ds, "LuaDebug");
 			BindCheckboxPref(panel, "SENDSYSINFO_CHECKBOX", ds, "SendSystemInformation");
-			BindCheckboxPref(panel, "REPLAY_COMMANDS_CHECKBOX", ds, "EnableDebugCommandsInReplays");
 
 			return () => { };
 		}

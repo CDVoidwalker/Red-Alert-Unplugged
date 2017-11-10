@@ -25,18 +25,17 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			var font = Game.Renderer.Fonts[label.Font];
 			var text = button.GetTooltipText();
 			var labelWidth = font.Measure(text).X;
-			var key = button.Key.GetValue();
 
 			label.GetText = () => text;
 			label.Bounds.Width = labelWidth;
 			widget.Bounds.Width = 2 * label.Bounds.X + labelWidth;
 
-			if (key.IsValid())
+			if (button.Key.IsValid())
 			{
 				var hotkey = widget.Get<LabelWidget>("HOTKEY");
 				hotkey.Visible = true;
 
-				var hotkeyLabel = "({0})".F(key.DisplayString());
+				var hotkeyLabel = "({0})".F(button.Key.DisplayString());
 				hotkey.GetText = () => hotkeyLabel;
 				hotkey.Bounds.X = labelWidth + 2 * label.Bounds.X;
 

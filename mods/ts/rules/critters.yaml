@@ -2,7 +2,6 @@ DOGGIE:
 	Inherits@1: ^Infantry
 	Inherits@2: ^RegularInfantryDeath
 	Inherits@3: ^HealsOnTiberium
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Tooltip:
 		Name: Tiberian Fiend
 	Health:
@@ -54,7 +53,7 @@ VISC_SML:
 VISC_LRG:
 	Inherits: ^Visceroid
 	Inherits@CRATESTATS: ^CrateStatModifiers
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Tooltip:
 		Name: Adult Visceroid
 	Health:
@@ -84,7 +83,7 @@ VISC_LRG:
 JFISH:
 	Inherits: ^Visceroid
 	Inherits@CRATESTATS: ^CrateStatModifiers
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Tooltip:
 		Name: Tiberium Floater
 	Health:

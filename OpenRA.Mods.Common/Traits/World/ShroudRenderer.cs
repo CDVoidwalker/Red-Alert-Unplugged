@@ -95,7 +95,6 @@ namespace OpenRA.Mods.Common.Traits
 		Shroud currentShroud;
 		Func<PPos, bool> visibleUnderShroud, visibleUnderFog;
 		TerrainSpriteLayer shroudLayer, fogLayer;
-		bool disposed;
 
 		public ShroudRenderer(World world, ShroudRendererInfo info)
 		{
@@ -302,7 +301,8 @@ namespace OpenRA.Mods.Common.Traits
 			return sprites[variant * variantStride + edgesToSpriteIndexOffset[(byte)edges]];
 		}
 
-		void INotifyActorDisposing.Disposing(Actor self)
+		bool disposed;
+		public void Disposing(Actor self)
 		{
 			if (disposed)
 				return;

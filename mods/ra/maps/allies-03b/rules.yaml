@@ -20,7 +20,7 @@ World:
 
 ^TechBuilding:
 	Capturable:
-		Types: ~disabled
+		Type: ~disabled
 
 powerproxy.paratroopers:
 	ParatroopersPower:

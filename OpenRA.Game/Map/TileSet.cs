@@ -185,6 +185,7 @@ namespace OpenRA
 		public readonly string Id;
 		public readonly int SheetSize = 512;
 		public readonly string Palette;
+		public readonly string PlayerPalette;
 		public readonly Color[] HeightDebugColors = new[] { Color.Red };
 		public readonly string[] EditorTemplateOrder;
 		public readonly bool IgnoreTileSpriteOffsets;

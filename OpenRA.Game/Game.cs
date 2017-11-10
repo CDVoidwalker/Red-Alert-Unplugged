@@ -60,7 +60,6 @@ namespace OpenRA
 		public static string EngineVersion { get; private set; }
 
 		static Task discoverNat;
-		static bool takeScreenshot = false;
 
 		public static OrderManager JoinServer(string host, int port, string password, bool recordReplay = true)
 		{
@@ -631,10 +630,7 @@ namespace OpenRA
 				InnerLogicTick(worldRenderer.World.OrderManager);
 		}
 
-		public static void TakeScreenshot()
-		{
-			takeScreenshot = true;
-		}
+		public static bool TakeScreenshot = false;
 
 		static void RenderTick()
 		{
@@ -670,9 +666,9 @@ namespace OpenRA
 				using (new PerfSample("render_flip"))
 					Renderer.EndFrame(new DefaultInputHandler(OrderManager.World));
 
-				if (takeScreenshot)
+				if (TakeScreenshot)
 				{
-					takeScreenshot = false;
+					TakeScreenshot = false;
 					TakeScreenshotInner();
 				}
 			}

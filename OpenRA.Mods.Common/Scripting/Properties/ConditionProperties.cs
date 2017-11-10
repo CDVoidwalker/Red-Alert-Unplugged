@@ -50,8 +50,7 @@ namespace OpenRA.Mods.Common.Scripting
 		public void RevokeCondition(int token)
 		{
 			foreach (var external in externalConditions)
-				if (external.TryRevokeCondition(Self, this, token))
-					break;
+				external.TryRevokeCondition(Self, this, token);
 		}
 
 		[Desc("Check whether this actor accepts a specific external condition.")]

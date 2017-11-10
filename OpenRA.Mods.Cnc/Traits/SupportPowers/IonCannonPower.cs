@@ -49,13 +49,7 @@ namespace OpenRA.Mods.Cnc.Traits
 		public override object Create(ActorInitializer init) { return new IonCannonPower(init.Self, this); }
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
-			WeaponInfo weapon;
-			var weaponToLower = (Weapon ?? string.Empty).ToLowerInvariant();
-			if (!rules.Weapons.TryGetValue(weaponToLower, out weapon))
-				throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(weaponToLower));
-
-			WeaponInfo = weapon;
-
+			WeaponInfo = rules.Weapons[Weapon.ToLowerInvariant()];
 			base.RulesetLoaded(rules, ai);
 		}
 	}

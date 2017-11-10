@@ -290,8 +290,6 @@
 		AirborneCondition: airborne
 		CruisingCondition: cruising
 		CanHover: True
-		TakeOffOnResupply: true
-		VTOL: true
 	HiddenUnderFog:
 		Type: GroundPosition
 	ActorLostNotification:
@@ -622,6 +620,10 @@
 	Inherits@1: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
 	Huntable:
+	Mobile:
+		Crushes: crate
+		TerrainSpeeds:
+			Water: 100
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
 	Selectable:
@@ -940,9 +942,9 @@
 		RequiresForceFire: yes
 		TargetTypes: Ground, Husk
 	Capturable:
-		Types: husk
+		Type: husk
+		AllowAllies: yes
 		CaptureThreshold: 100
-		ValidStances: Enemy, Neutral, Ally
 	TransformOnCapture:
 		ForceHealthPercentage: 25
 	Tooltip:
@@ -963,7 +965,6 @@
 		ZOffset: -129
 	Aircraft:
 		CanHover: True
-		VTOL: true
 	FallsToEarth:
 		Spins: True
 		Moves: False

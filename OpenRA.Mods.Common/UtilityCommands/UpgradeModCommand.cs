@@ -57,6 +57,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 		{
 			// HACK: The engine code assumes that Game.modData is set.
 			var modData = Game.ModData = utility.ModData;
+			modData.MapCache.LoadMaps();
 
 			var engineDate = Exts.ParseIntegerInvariant(args[1]);
 			if (engineDate < UpgradeRules.MinimumSupportedVersion)
@@ -76,19 +77,43 @@ namespace OpenRA.Mods.Common.UtilityCommands
 
 			// The map cache won't be valid if there was a map format upgrade, so walk the map packages manually
 			// Only upgrade system maps - user maps must be updated manually using --upgrade-map
-			Console.WriteLine("Processing System Maps:");
-			foreach (var map in modData.MapCache.EnumerateMapsWithoutCaching())
+			Console.WriteLine("Processing Maps:");
+			foreach (var kv in modData.Manifest.MapFolders)
 			{
+				var name = kv.Key;
+				var classification = string.IsNullOrEmpty(kv.Value)
+					? MapClassification.Unknown : Enum<MapClassification>.Parse(kv.Value);
+
+				if (classification != MapClassification.System)
+					continue;
+
+				var optional = name.StartsWith("~");
+				if (optional)
+					name = name.Substring(1);
+
 				try
 				{
-					Console.WriteLine(map.Package.Name);
-					UpgradeMapCommand.UpgradeMap(modData, (IReadWritePackage)map.Package, engineDate);
+					using (var package = (IReadWritePackage)modData.ModFiles.OpenPackage(name))
+					{
+						foreach (var map in package.Contents)
+						{
+							try
+							{
+								using (var mapPackage = package.OpenPackage(map, modData.ModFiles))
+								{
+									if (mapPackage != null)
+										UpgradeMapCommand.UpgradeMap(modData, (IReadWritePackage)mapPackage, engineDate);
+								}
+							}
+							catch (Exception e)
+							{
+								Console.WriteLine("Failed to upgrade map {0}", map);
+								Console.WriteLine("Error was: {0}", e.ToString());
+							}
+						}
+					}
 				}
-				catch (Exception e)
-				{
-					Console.WriteLine("Failed to upgrade map {0}", map);
-					Console.WriteLine("Error was: {0}", e.ToString());
-				}
+				catch { }
 			}
 		}
 	}

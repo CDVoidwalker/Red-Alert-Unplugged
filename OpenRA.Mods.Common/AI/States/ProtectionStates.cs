@@ -9,8 +9,6 @@
  */
 #endregion
 
-using OpenRA.Traits;
-
 namespace OpenRA.Mods.Common.AI
 {
 	class UnitsForProtectionIdleState : GroundStateBase, IState
@@ -57,7 +55,7 @@ namespace OpenRA.Mods.Common.AI
 			else
 			{
 				foreach (var a in owner.Units)
-					owner.Bot.QueueOrder(new Order("AttackMove", a, Target.FromCell(owner.World, owner.TargetActor.Location), false));
+					owner.Bot.QueueOrder(new Order("AttackMove", a, false) { TargetLocation = owner.TargetActor.Location });
 			}
 		}
 

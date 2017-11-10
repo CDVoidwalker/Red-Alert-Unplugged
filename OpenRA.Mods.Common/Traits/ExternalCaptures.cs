@@ -34,10 +34,6 @@ namespace OpenRA.Mods.Common.Traits
 
 		[VoiceReference] public readonly string Voice = "Action";
 
-		[GrantedConditionReference]
-		[Desc("Condition granted when capturing.")]
-		public readonly string CapturingCondition = null;
-
 		public readonly string CaptureCursor = "ability";
 		public readonly string CaptureBlockedCursor = "move-blocked";
 
@@ -66,25 +62,35 @@ namespace OpenRA.Mods.Common.Traits
 			if (order.OrderID != "ExternalCaptureActor")
 				return null;
 
-			return new Order(order.OrderID, self, target, queued);
+			if (target.Type == TargetType.FrozenActor)
+				return new Order(order.OrderID, self, queued) { ExtraData = target.FrozenActor.ID };
+
+			return new Order(order.OrderID, self, queued) { TargetActor = target.Actor };
 		}
 
 		static bool IsValidOrder(Actor self, Order order)
 		{
-			if (order.Target.Type == TargetType.FrozenActor)
+			// Not targeting an actor
+			if (order.ExtraData == 0 && order.TargetActor == null)
+				return false;
+
+			if (order.ExtraData != 0)
 			{
-				var frozen = order.Target.FrozenActor;
+				// Targeted an actor under the fog
+				var frozenLayer = self.Owner.PlayerActor.TraitOrDefault<FrozenActorLayer>();
+				if (frozenLayer == null)
+					return false;
+
+				var frozen = frozenLayer.FromID(order.ExtraData);
+				if (frozen == null)
+					return false;
+
 				var ci = frozen.Info.TraitInfoOrDefault<ExternalCapturableInfo>();
 				return ci != null && ci.CanBeTargetedBy(self, frozen.Owner);
 			}
 
-			if (order.Target.Type == TargetType.Actor)
-			{
-				var c = order.TargetActor.TraitOrDefault<ExternalCapturable>();
-				return c != null && !c.CaptureInProgress && c.Info.CanBeTargetedBy(self, order.TargetActor.Owner);
-			}
-
-			return false;
+			var c = order.TargetActor.TraitOrDefault<ExternalCapturable>();
+			return c != null && !c.CaptureInProgress && c.Info.CanBeTargetedBy(self, order.TargetActor.Owner);
 		}
 
 		public string VoicePhraseForOrder(Actor self, Order order)

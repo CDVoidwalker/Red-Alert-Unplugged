@@ -70,6 +70,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		public readonly int Speed = 1;
 
+		public readonly bool OnRails = false;
+
 		[Desc("Allow multiple (infantry) units in one cell.")]
 		public readonly bool SharesCell = false;
 
@@ -569,12 +571,12 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
-		void INotifyAddedToWorld.AddedToWorld(Actor self)
+		public void AddedToWorld(Actor self)
 		{
 			self.World.AddToMaps(self, this);
 		}
 
-		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
+		public void RemovedFromWorld(Actor self)
 		{
 			self.World.RemoveFromMaps(self, this);
 		}
@@ -585,7 +587,12 @@ namespace OpenRA.Mods.Common.Traits
 		public Order IssueOrder(Actor self, IOrderTargeter order, Target target, bool queued)
 		{
 			if (order is MoveOrderTargeter)
-				return new Order("Move", self, target, queued);
+			{
+				if (Info.OnRails)
+					return null;
+
+				return new Order("Move", self, queued) { TargetLocation = self.World.Map.CellContaining(target.CenterPosition) };
+			}
 
 			return null;
 		}
@@ -649,9 +656,6 @@ namespace OpenRA.Mods.Common.Traits
 
 		public string VoicePhraseForOrder(Actor self, Order order)
 		{
-			if (!Info.MoveIntoShroud && !self.Owner.Shroud.IsExplored(order.TargetLocation))
-				return null;
-
 			switch (order.OrderString)
 			{
 				case "Move":

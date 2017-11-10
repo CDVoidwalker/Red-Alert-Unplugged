@@ -23,7 +23,6 @@ namespace OpenRA.Primitives
 	{
 		readonly Queue<byte> data = new Queue<byte>(1024);
 		readonly Stream baseStream;
-		bool baseStreamEmpty;
 
 		protected ReadOnlyAdapterStream(Stream stream)
 		{
@@ -56,9 +55,10 @@ namespace OpenRA.Primitives
 			var copied = 0;
 			ConsumeData(buffer, offset, count, ref copied);
 
-			while (copied < count && !baseStreamEmpty)
+			var finished = false;
+			while (copied < count && !finished)
 			{
-				baseStreamEmpty = BufferData(baseStream, data);
+				finished = BufferData(baseStream, data);
 				ConsumeData(buffer, offset, count, ref copied);
 			}
 

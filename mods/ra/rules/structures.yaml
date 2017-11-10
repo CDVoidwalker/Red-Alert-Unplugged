@@ -42,8 +42,7 @@ MSLO:
 		InsufficientPowerSpeechNotification: InsufficientPower
 		IncomingSpeechNotification: AbombLaunchDetected
 		MissileWeapon: atomic
-		MissileDelay: 5
-		SpawnOffset: 1c0,427,0
+		SpawnOffset: 0,427,0
 		DisplayTimerStances: Ally, Neutral, Enemy
 		DisplayBeacon: True
 		DisplayRadarPing: True
@@ -62,7 +61,6 @@ MSLO:
 		Amount: -150
 	MustBeDestroyed:
 		RequiredForShortGame: false
-	WithNukeLaunchAnimation:
 
 GAP:
 	Inherits: ^ScienceBuilding
@@ -104,7 +102,6 @@ GAP:
 		Amount: -60
 	MustBeDestroyed:
 		RequiredForShortGame: false
-	-AcceptsDeliveredCash:
 	Explodes:
 		Weapon: SmallBuildingExplode
 		EmptyWeapon: SmallBuildingExplode
@@ -460,6 +457,7 @@ PDOX:
 		DisplayRadarPing: True
 		Range: 2
 	SupportPowerChargeBar:
+	-AcceptsDeliveredCash:
 	Power:
 		Amount: -200
 	MustBeDestroyed:
@@ -548,7 +546,7 @@ AGUN:
 		TurnSpeed: 15
 		InitialFacing: 224
 	-WithSpriteBody:
-	WithEmbeddedTurretSpriteBody:
+	WithTurretedSpriteBody:
 	Armament:
 		Weapon: ZSU-23
 		LocalOffset: 520,100,450, 520,-150,450
@@ -751,7 +749,7 @@ GUN:
 		TurnSpeed: 12
 		InitialFacing: 56
 	-WithSpriteBody:
-	WithEmbeddedTurretSpriteBody:
+	WithTurretedSpriteBody:
 	Armament:
 		Weapon: TurretGun
 		LocalOffset: 512,0,112
@@ -848,7 +846,7 @@ SAM:
 		TurnSpeed: 30
 		InitialFacing: 0
 	-WithSpriteBody:
-	WithEmbeddedTurretSpriteBody:
+	WithTurretedSpriteBody:
 	Armament:
 		Weapon: Nike
 		LocalOffset: 0,0,320
@@ -1371,7 +1369,6 @@ AFLD:
 		Description: Paratroopers
 		LongDesc: A Badger drops a squad of infantry\nanywhere on the map.
 		DropItems: E1R1,E1R1,E1R1,E3R1,E3R1
-		ReinforcementsArrivedSpeechNotification: ReinforcementsArrived
 		SelectTargetSpeechNotification: SelectTarget
 		AllowImpassableCells: false
 		QuantizedFacings: 8

@@ -26,7 +26,7 @@ namespace OpenRA.Mods.Common.AI
 		{
 			var loc = RandomBuildingLocation(squad);
 			foreach (var a in squad.Units)
-				squad.Bot.QueueOrder(new Order("Move", a, Target.FromCell(squad.World, loc), false));
+				squad.Bot.QueueOrder(new Order("Move", a, false) { TargetLocation = loc });
 		}
 
 		protected static CPos RandomBuildingLocation(Squad squad)
@@ -34,9 +34,8 @@ namespace OpenRA.Mods.Common.AI
 			var location = squad.Bot.GetRandomBaseCenter();
 			var buildings = squad.World.ActorsHavingTrait<Building>()
 				.Where(a => a.Owner == squad.Bot.Player).ToList();
-			if (buildings.Any())
+			if (buildings.Count > 0)
 				location = buildings.Random(squad.Random).Location;
-
 			return location;
 		}
 

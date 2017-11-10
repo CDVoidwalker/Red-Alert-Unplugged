@@ -9,8 +9,6 @@
  */
 #endregion
 
-using System.Collections.Generic;
-using System.Linq;
 using Eluant;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
@@ -22,33 +20,25 @@ namespace OpenRA.Mods.Common.Scripting
 	[ScriptPropertyGroup("Ability")]
 	public class CaptureProperties : ScriptActorProperties
 	{
-		readonly Captures[] captures;
+		readonly CapturesInfo normalInfo;
 		readonly ExternalCapturesInfo externalInfo;
 
 		public CaptureProperties(ScriptContext context, Actor self)
 			: base(context, self)
 		{
-			captures = Self.TraitsImplementing<Captures>().ToArray();
+			normalInfo = Self.Info.TraitInfoOrDefault<CapturesInfo>();
 			externalInfo = Self.Info.TraitInfoOrDefault<ExternalCapturesInfo>();
 		}
 
 		[Desc("Captures the target actor.")]
 		public void Capture(Actor target)
 		{
-			var capturable = target.Info.TraitInfoOrDefault<CapturableInfo>();
-
-			if (capturable != null)
-			{
-				if (captures.Any(x => !x.IsTraitDisabled && x.Info.CaptureTypes.Overlaps(capturable.Types)))
-				{
-					Self.QueueActivity(new CaptureActor(Self, target));
-					return;
-				}
-			}
-
+			var normalCapturable = target.Info.TraitInfoOrDefault<CapturableInfo>();
 			var externalCapturable = target.Info.TraitInfoOrDefault<ExternalCapturableInfo>();
 
-			if (externalInfo != null && externalCapturable != null && externalInfo.CaptureTypes.Overlaps(externalCapturable.Types))
+			if (normalInfo != null && normalCapturable != null && normalInfo.CaptureTypes.Contains(normalCapturable.Type))
+				Self.QueueActivity(new CaptureActor(Self, target));
+			else if (externalInfo != null && externalCapturable != null && externalInfo.CaptureTypes.Contains(externalCapturable.Type))
 				Self.QueueActivity(new ExternalCaptureActor(Self, Target.FromActor(target)));
 			else
 				throw new LuaException("Actor '{0}' cannot capture actor '{1}'!".F(Self, target));

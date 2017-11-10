@@ -41,7 +41,7 @@ namespace OpenRA.Mods.Common.Traits
 			mo = self.Trait<MissionObjectives>();
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (self.Owner.WinState != WinState.Undefined || self.Owner.NonCombatant) return;
 

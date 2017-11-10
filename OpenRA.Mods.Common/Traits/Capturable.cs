@@ -9,7 +9,6 @@
  */
 #endregion
 
-using System.Collections.Generic;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
@@ -17,12 +16,11 @@ namespace OpenRA.Mods.Common.Traits
 	[Desc("This actor can be captured by a unit with Captures: trait.")]
 	public class CapturableInfo : ITraitInfo
 	{
-		[Desc("CaptureTypes (from the Captures trait) that are able to capture this.")]
-		public readonly HashSet<string> Types = new HashSet<string>() { "building" };
-
-		[Desc("What diplomatic stances can be captured by this actor.")]
-		public readonly Stance ValidStances = Stance.Neutral | Stance.Enemy;
-
+		[Desc("Type listed under Types in Captures: trait of actors that can capture this).")]
+		public readonly string Type = "building";
+		public readonly bool AllowAllies = false;
+		public readonly bool AllowNeutral = true;
+		public readonly bool AllowEnemies = true;
 		[Desc("Health percentage the target must be at (or below) before it can be captured.")]
 		public readonly int CaptureThreshold = 50;
 		public readonly bool CancelActivity = false;
@@ -35,11 +33,17 @@ namespace OpenRA.Mods.Common.Traits
 			if (c == null)
 				return false;
 
-			var stance = owner.Stances[captor.Owner];
-			if (!ValidStances.HasStance(stance))
+			var playerRelationship = owner.Stances[captor.Owner];
+			if (playerRelationship == Stance.Ally && !AllowAllies)
 				return false;
 
-			if (!c.CaptureTypes.Overlaps(Types))
+			if (playerRelationship == Stance.Enemy && !AllowEnemies)
+				return false;
+
+			if (playerRelationship == Stance.Neutral && !AllowNeutral)
+				return false;
+
+			if (!c.CaptureTypes.Contains(Type))
 				return false;
 
 			return true;

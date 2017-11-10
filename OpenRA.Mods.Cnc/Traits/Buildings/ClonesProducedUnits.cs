@@ -12,7 +12,6 @@
 using System.Collections.Generic;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
-using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Cnc.Traits
@@ -50,13 +49,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			if (ci == null || !info.CloneableTypes.Overlaps(ci.Types))
 				return;
 
-			var inits = new TypeDictionary
-			{
-				new OwnerInit(self.Owner),
-				new FactionInit(BuildableInfo.GetInitialFaction(produced.Info, faction))
-			};
-
-			production.Produce(self, produced.Info, inits);
+			production.Produce(self, produced.Info, faction);
 		}
 	}
 }

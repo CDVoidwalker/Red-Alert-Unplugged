@@ -15,7 +15,7 @@ using OpenRA.Graphics;
 
 namespace OpenRA.Mods.Common.Effects
 {
-	public class CrateEffect : IEffect, ISpatiallyPartitionable
+	public class CrateEffect : IEffect
 	{
 		readonly string palette;
 		readonly Actor a;
@@ -27,14 +27,12 @@ namespace OpenRA.Mods.Common.Effects
 			this.palette = palette;
 
 			anim = new Animation(a.World, "crate-effects");
-			anim.PlayThen(seq, () => a.World.AddFrameEndTask(w => { w.Remove(this); w.ScreenMap.Remove(this); }));
-			a.World.ScreenMap.Add(this, a.CenterPosition, anim.Image);
+			anim.PlayThen(seq, () => a.World.AddFrameEndTask(w => w.Remove(this)));
 		}
 
 		public void Tick(World world)
 		{
 			anim.Tick();
-			world.ScreenMap.Update(this, a.CenterPosition, anim.Image);
 		}
 
 		public IEnumerable<IRenderable> Render(WorldRenderer wr)

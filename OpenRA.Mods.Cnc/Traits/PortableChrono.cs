@@ -66,7 +66,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			Info = info;
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (chargeTick > 0)
 				chargeTick--;
@@ -88,9 +88,9 @@ namespace OpenRA.Mods.Cnc.Traits
 				self.World.OrderGenerator = new PortableChronoOrderGenerator(self, Info);
 
 			if (order.OrderID == "PortableChronoTeleport")
-				return new Order(order.OrderID, self, target, queued);
+				return new Order(order.OrderID, self, queued) { TargetLocation = self.World.Map.CellContaining(target.CenterPosition) };
 
-			return null;
+			return new Order(order.OrderID, self, queued) { TargetActor = target.Actor };
 		}
 
 		public void ResolveOrder(Actor self, Order order)
@@ -103,7 +103,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			}
 		}
 
-		string IOrderVoice.VoicePhraseForOrder(Actor self, Order order)
+		public string VoicePhraseForOrder(Actor self, Order order)
 		{
 			return order.OrderString == "PortableChronoTeleport" && CanTeleport ? Info.Voice : null;
 		}
@@ -185,7 +185,7 @@ namespace OpenRA.Mods.Cnc.Traits
 				&& self.Trait<PortableChrono>().CanTeleport && self.Owner.Shroud.IsExplored(cell))
 			{
 				world.CancelInputMode();
-				yield return new Order("PortableChronoTeleport", self, Target.FromCell(world, cell), mi.Modifiers.HasModifier(Modifiers.Shift));
+				yield return new Order("PortableChronoTeleport", self, mi.Modifiers.HasModifier(Modifiers.Shift)) { TargetLocation = cell };
 			}
 		}
 

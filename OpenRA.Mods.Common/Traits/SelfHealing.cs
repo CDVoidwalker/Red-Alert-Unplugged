@@ -50,7 +50,7 @@ namespace OpenRA.Mods.Common.Traits
 			health = self.Trait<Health>();
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (self.IsDead || IsTraitDisabled)
 				return;

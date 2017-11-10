@@ -31,7 +31,6 @@ namespace OpenRA.Mods.Common.Traits.Render
 		readonly WithSpriteBody wsb;
 		readonly Harvester harv;
 
-		// TODO: Remove this once WithSpriteBody has its own replacement
 		public bool IsModifying;
 
 		public WithHarvestAnimation(ActorInitializer init, WithHarvestAnimationInfo info)
@@ -52,7 +51,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 				return baseSequence;
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			var baseSequence = wsb.NormalizeSequence(self, wsb.Info.Sequence);
 			var sequence = NormalizeHarvesterSequence(self, baseSequence);
@@ -60,7 +59,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 				wsb.DefaultAnimation.ReplaceAnim(sequence);
 		}
 
-		void INotifyHarvesterAction.Harvested(Actor self, ResourceType resource)
+		public void Harvested(Actor self, ResourceType resource)
 		{
 			var baseSequence = wsb.NormalizeSequence(self, Info.HarvestSequence);
 			var sequence = NormalizeHarvesterSequence(self, baseSequence);
@@ -73,18 +72,18 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		// If IsModifying isn't set to true, the docking animation
 		// will be overridden by the WithHarvestAnimation fullness modifier.
-		void INotifyHarvesterAction.Docked()
+		public void Docked()
 		{
 			IsModifying = true;
 		}
 
-		void INotifyHarvesterAction.Undocked()
+		public void Undocked()
 		{
 			IsModifying = false;
 		}
 
-		void INotifyHarvesterAction.MovingToResources(Actor self, CPos targetCell, Activity next) { }
-		void INotifyHarvesterAction.MovingToRefinery(Actor self, CPos targetCell, Activity next) { }
-		void INotifyHarvesterAction.MovementCancelled(Actor self) { }
+		public void MovingToResources(Actor self, CPos targetCell, Activity next) { }
+		public void MovingToRefinery(Actor self, CPos targetCell, Activity next) { }
+		public void MovementCancelled(Actor self) { }
 	}
 }

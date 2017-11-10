@@ -18,15 +18,7 @@ namespace OpenRA.Mods.Common.Traits
 	[Desc("Unit got to face the target")]
 	public class AttackFrontalInfo : AttackBaseInfo, Requires<IFacingInfo>
 	{
-		public readonly int FacingTolerance = 0;
-
-		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
-		{
-			base.RulesetLoaded(rules, ai);
-
-			if (FacingTolerance < 0 || FacingTolerance > 128)
-				throw new YamlException("Facing tolerance must be in range of [0, 128], 128 covers 360 degrees.");
-		}
+		public readonly int FacingTolerance = 1;
 
 		public override object Create(ActorInitializer init) { return new AttackFrontal(init.Self, this); }
 	}
@@ -46,19 +38,21 @@ namespace OpenRA.Mods.Common.Traits
 			if (!base.CanAttack(self, target))
 				return false;
 
+			var f = facing.Facing;
 			var pos = self.CenterPosition;
 			var targetedPosition = GetTargetPosition(pos, target);
 			var delta = targetedPosition - pos;
+			var facingToTarget = delta.HorizontalLengthSquared != 0 ? delta.Yaw.Facing : f;
 
-			if (delta.HorizontalLengthSquared == 0)
-				return true;
+			if (Math.Abs(facingToTarget - f) % 256 > info.FacingTolerance)
+				return false;
 
-			return Util.FacingWithinTolerance(facing.Facing, delta.Yaw.Facing, info.FacingTolerance);
+			return true;
 		}
 
 		public override Activity GetAttackActivity(Actor self, Target newTarget, bool allowMove, bool forceAttack)
 		{
-			return new Activities.Attack(self, newTarget, allowMove, forceAttack, info.FacingTolerance);
+			return new Activities.Attack(self, newTarget, allowMove, forceAttack);
 		}
 	}
 }

@@ -242,7 +242,7 @@ namespace OpenRA.Traits
 			return Rectangle.FromLTRB(minU, minV, maxU + 1, maxV + 1);
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			UpdateDirtyFrozenActorsFromDirtyBins();
 

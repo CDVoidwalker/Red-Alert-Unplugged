@@ -45,7 +45,7 @@ namespace OpenRA.Mods.Common.Traits
 			this.info = info;
 		}
 
-		void ICreatePlayers.CreatePlayers(World w)
+		public void CreatePlayers(World w)
 		{
 			if (w.Type != WorldType.Editor)
 				return;
@@ -79,7 +79,7 @@ namespace OpenRA.Mods.Common.Traits
 				UpdateNeighbours(p.Footprint);
 		}
 
-		void ITickRender.TickRender(WorldRenderer wr, Actor self)
+		public void TickRender(WorldRenderer wr, Actor self)
 		{
 			if (wr.World.Type != WorldType.Editor)
 				return;
@@ -106,9 +106,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			var preview = new EditorActorPreview(worldRenderer, id, reference, owner);
 			previews.Add(preview);
-
-			if (!preview.Bounds.IsEmpty)
-				screenMap.Add(preview, preview.Bounds);
+			screenMap.Add(preview, preview.Bounds);
 
 			foreach (var kv in preview.Footprint)
 			{

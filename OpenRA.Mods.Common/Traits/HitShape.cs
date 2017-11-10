@@ -73,7 +73,7 @@ namespace OpenRA.Mods.Common.Traits
 			base.Created(self);
 		}
 
-		IEnumerable<WPos> ITargetablePositions.TargetablePositions(Actor self)
+		public IEnumerable<WPos> TargetablePositions(Actor self)
 		{
 			if (IsTraitDisabled)
 				yield break;

@@ -50,7 +50,7 @@ namespace OpenRA.Mods.Common.Traits
 		}
 
 		// Here self is the player actor
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			// TODO: Make the AI handle such notifications and remove Owner.IsBot from this check
 			// Disable notifications for AI and neutral players (creeps) and for spectators
@@ -79,7 +79,7 @@ namespace OpenRA.Mods.Common.Traits
 					continue;
 
 				// The actor is not currently visible
-				if (!actor.Actor.CanBeViewedByPlayer(self.Owner))
+				if (!self.Owner.CanViewActor(actor.Actor))
 					continue;
 
 				visibleActorIds.Add(actor.Actor.ActorID);

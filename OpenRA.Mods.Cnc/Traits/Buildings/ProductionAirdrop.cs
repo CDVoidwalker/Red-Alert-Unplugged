@@ -9,7 +9,6 @@
  */
 #endregion
 
-using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Activities;
 using OpenRA.Mods.Common;
@@ -39,7 +38,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			this.info = info;
 		}
 
-		public override bool Produce(Actor self, ActorInfo producee, TypeDictionary inits)
+		public override bool Produce(Actor self, ActorInfo producee, string factionVariant)
 		{
 			var owner = self.Owner;
 			var aircraftInfo = self.World.Map.Rules.Actors[info.ActorType].TraitInfo<AircraftInfo>();
@@ -80,7 +79,7 @@ namespace OpenRA.Mods.Cnc.Traits
 					foreach (var cargo in self.TraitsImplementing<INotifyDelivery>())
 						cargo.Delivered(self);
 
-					self.World.AddFrameEndTask(ww => DoProduction(self, producee, exit, inits));
+					self.World.AddFrameEndTask(ww => DoProduction(self, producee, exit, factionVariant));
 					Game.Sound.PlayNotification(self.World.Map.Rules, self.Owner, "Speech", info.ReadyAudio, self.Owner.Faction.InternalName);
 				}));
 

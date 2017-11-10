@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using OpenRA.Effects;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
 
@@ -34,7 +33,6 @@ namespace OpenRA.Traits
 		readonly Func<Actor, bool> actorIsInWorld = a => a.IsInWorld;
 		readonly Cache<Player, SpatiallyPartitioned<FrozenActor>> partitionedFrozenActors;
 		readonly SpatiallyPartitioned<Actor> partitionedActors;
-		readonly SpatiallyPartitioned<IEffect> partitionedEffects;
 		WorldRenderer worldRenderer;
 
 		public ScreenMap(World world, ScreenMapInfo info)
@@ -45,7 +43,6 @@ namespace OpenRA.Traits
 			partitionedFrozenActors = new Cache<Player, SpatiallyPartitioned<FrozenActor>>(
 				_ => new SpatiallyPartitioned<FrozenActor>(width, height, info.BinSize));
 			partitionedActors = new SpatiallyPartitioned<Actor>(width, height, info.BinSize);
-			partitionedEffects = new SpatiallyPartitioned<IEffect>(width, height, info.BinSize);
 		}
 
 		public void WorldLoaded(World w, WorldRenderer wr) { worldRenderer = wr; }
@@ -91,45 +88,6 @@ namespace OpenRA.Traits
 			partitionedActors.Remove(a);
 		}
 
-		public void Add(IEffect effect, WPos position, Size size)
-		{
-			var screenPos = worldRenderer.ScreenPxPosition(position);
-			var screenBounds = new Rectangle(screenPos.X - size.Width / 2, screenPos.Y - size.Height / 2, size.Width, size.Height);
-			if (ValidBounds(screenBounds))
-				partitionedEffects.Add(effect, screenBounds);
-		}
-
-		public void Add(IEffect effect, WPos position, Sprite sprite)
-		{
-			var size = new Size((int)sprite.Size.X, (int)sprite.Size.Y);
-			Add(effect, position, size);
-		}
-
-		public void Update(IEffect effect, WPos position, Size size)
-		{
-			var screenPos = worldRenderer.ScreenPxPosition(position);
-			var screenBounds = new Rectangle(screenPos.X - size.Width / 2, screenPos.Y - size.Height / 2, size.Width, size.Height);
-			partitionedEffects.Remove(effect);
-			if (ValidBounds(screenBounds))
-				partitionedEffects.Add(effect, screenBounds);
-		}
-
-		public void Update(IEffect effect, WPos position, Sprite sprite)
-		{
-			var size = new Size((int)sprite.Size.X, (int)sprite.Size.Y);
-			Update(effect, position, size);
-		}
-
-		public void Remove(IEffect effect)
-		{
-			partitionedEffects.Remove(effect);
-		}
-
-		bool ValidBounds(Rectangle bounds)
-		{
-			return bounds.Width > 0 && bounds.Height > 0;
-		}
-
 		public IEnumerable<FrozenActor> FrozenActorsAt(Player viewer, int2 worldPx)
 		{
 			if (viewer == null)
@@ -162,11 +120,6 @@ namespace OpenRA.Traits
 			return ActorsInBox(RectWithCorners(a, b));
 		}
 
-		public IEnumerable<IEffect> EffectsInBox(int2 a, int2 b)
-		{
-			return partitionedEffects.InBox(RectWithCorners(a, b));
-		}
-
 		public IEnumerable<Actor> ActorsInBox(Rectangle r)
 		{
 			return partitionedActors.InBox(r).Where(actorIsInWorld);
@@ -175,11 +128,6 @@ namespace OpenRA.Traits
 		public IEnumerable<FrozenActor> FrozenActorsInBox(Player p, int2 a, int2 b)
 		{
 			return FrozenActorsInBox(p, RectWithCorners(a, b));
-		}
-
-		public IEnumerable<IEffect> EffectsInBox(Rectangle r)
-		{
-			return partitionedEffects.InBox(r);
 		}
 
 		public IEnumerable<FrozenActor> FrozenActorsInBox(Player p, Rectangle r)

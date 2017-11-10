@@ -145,13 +145,13 @@ namespace OpenRA.Mods.Common.Traits
 			ApplyStanceCondition(self);
 		}
 
-		void IResolveOrder.ResolveOrder(Actor self, Order order)
+		public void ResolveOrder(Actor self, Order order)
 		{
 			if (order.OrderString == "SetUnitStance" && Info.EnableStances)
 				SetStance(self, (UnitStance)order.ExtraData);
 		}
 
-		void INotifyDamage.Damaged(Actor self, AttackInfo e)
+		public void Damaged(Actor self, AttackInfo e)
 		{
 			if (IsTraitDisabled || !self.IsIdle || Stance < UnitStance.ReturnFire)
 				return;
@@ -188,7 +188,7 @@ namespace OpenRA.Mods.Common.Traits
 				Attack(self, Aggressor, allowMove);
 		}
 
-		void INotifyIdle.TickIdle(Actor self)
+		public void TickIdle(Actor self)
 		{
 			if (IsTraitDisabled || Stance < UnitStance.Defend)
 				return;
@@ -210,7 +210,7 @@ namespace OpenRA.Mods.Common.Traits
 			return true;
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (IsTraitDisabled)
 				return;
@@ -300,7 +300,7 @@ namespace OpenRA.Mods.Common.Traits
 					return true;
 				}).ToList();
 
-				if (!validPriorities.Any() || PreventsAutoTarget(self, actor) || !actor.CanBeViewedByPlayer(self.Owner))
+				if (!validPriorities.Any() || PreventsAutoTarget(self, actor) || !self.Owner.CanTargetActor(actor))
 					continue;
 
 				// Make sure that we can actually fire on the actor

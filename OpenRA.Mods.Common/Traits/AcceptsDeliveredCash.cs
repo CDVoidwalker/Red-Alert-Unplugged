@@ -10,7 +10,6 @@
 #endregion
 
 using System.Collections.Generic;
-using OpenRA.Mods.Common.Traits.Sound;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
@@ -24,27 +23,11 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Stance the delivering actor needs to enter.")]
 		public readonly Stance ValidStances = Stance.Ally;
 
-		[Desc("Play a randomly selected sound from this list when accepting cash.")]
-		public readonly string[] Sounds = { };
-
 		public object Create(ActorInitializer init) { return new AcceptsDeliveredCash(init.Self, this); }
 	}
 
-	public class AcceptsDeliveredCash : INotifyCashTransfer
+	public class AcceptsDeliveredCash
 	{
-		AcceptsDeliveredCashInfo info;
-
-		public AcceptsDeliveredCash(Actor self, AcceptsDeliveredCashInfo info)
-		{
-			this.info = info;
-		}
-
-		void INotifyCashTransfer.OnAcceptingCash(Actor self, Actor donor)
-		{
-			if (info.Sounds.Length > 0)
-				Game.Sound.Play(SoundType.World, info.Sounds.Random(self.World.SharedRandom), self.CenterPosition);
-		}
-
-		void INotifyCashTransfer.OnDeliveringCash(Actor self, Actor acceptor) { }
+		public AcceptsDeliveredCash(Actor self, AcceptsDeliveredCashInfo info) { }
 	}
 }

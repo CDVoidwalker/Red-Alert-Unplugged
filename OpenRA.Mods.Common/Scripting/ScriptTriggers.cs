@@ -87,7 +87,7 @@ namespace OpenRA.Mods.Common.Scripting
 			return Triggerables(trigger).Count > 0;
 		}
 
-		void INotifyIdle.TickIdle(Actor self)
+		public void TickIdle(Actor self)
 		{
 			if (world.Disposing)
 				return;
@@ -322,7 +322,7 @@ namespace OpenRA.Mods.Common.Scripting
 			}
 		}
 
-		void INotifyAddedToWorld.AddedToWorld(Actor self)
+		public void AddedToWorld(Actor self)
 		{
 			if (world.Disposing)
 				return;
@@ -341,7 +341,7 @@ namespace OpenRA.Mods.Common.Scripting
 			}
 		}
 
-		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
+		public void RemovedFromWorld(Actor self)
 		{
 			if (world.Disposing)
 				return;
@@ -523,7 +523,7 @@ namespace OpenRA.Mods.Common.Scripting
 				Clear(t);
 		}
 
-		void INotifyActorDisposing.Disposing(Actor self)
+		public void Disposing(Actor self)
 		{
 			ClearAll();
 		}

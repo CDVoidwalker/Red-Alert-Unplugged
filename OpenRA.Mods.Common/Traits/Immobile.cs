@@ -52,7 +52,7 @@ namespace OpenRA.Mods.Common.Traits
 		public WPos CenterPosition { get { return position; } }
 		public IEnumerable<Pair<CPos, SubCell>> OccupiedCells() { return occupied; }
 
-		void INotifyAddedToWorld.AddedToWorld(Actor self)
+		public void AddedToWorld(Actor self)
 		{
 			self.World.ActorMap.AddInfluence(self, this);
 			self.World.ActorMap.AddPosition(self, this);
@@ -61,7 +61,7 @@ namespace OpenRA.Mods.Common.Traits
 				self.World.ScreenMap.Add(self);
 		}
 
-		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
+		public void RemovedFromWorld(Actor self)
 		{
 			self.World.ActorMap.RemoveInfluence(self, this);
 			self.World.ActorMap.RemovePosition(self, this);

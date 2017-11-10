@@ -43,7 +43,6 @@ namespace OpenRA.Mods.Common.AI
 		public class UnitCategories
 		{
 			public readonly HashSet<string> Mcv = new HashSet<string>();
-			public readonly HashSet<string> NavalUnits = new HashSet<string>();
 			public readonly HashSet<string> ExcludeFromSquads = new HashSet<string>();
 		}
 
@@ -583,7 +582,7 @@ namespace OpenRA.Mods.Common.AI
 			return null;
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (!IsEnabled)
 				return;
@@ -757,7 +756,7 @@ namespace OpenRA.Mods.Common.AI
 			if (target.Actor == null)
 				return;
 
-			QueueOrder(new Order(target.OrderString, capturer, Target.FromActor(target.Actor), true));
+			QueueOrder(new Order(target.OrderString, capturer, true) { TargetActor = target.Actor });
 			BotDebug("AI ({0}): Ordered {1} to capture {2}", Player.ClientIndex, capturer, target.Actor);
 			activeUnits.Remove(capturer);
 		}
@@ -813,7 +812,7 @@ namespace OpenRA.Mods.Common.AI
 				// Tell the idle harvester to quit slacking:
 				var newSafeResourcePatch = FindNextResource(harvester, harv);
 				BotDebug("AI: Harvester {0} is idle. Ordering to {1} in search for new resources.".F(harvester, newSafeResourcePatch));
-				QueueOrder(new Order("Harvest", harvester, Target.FromCell(World, newSafeResourcePatch), false));
+				QueueOrder(new Order("Harvest", harvester, false) { TargetLocation = newSafeResourcePatch });
 			}
 		}
 
@@ -837,14 +836,6 @@ namespace OpenRA.Mods.Common.AI
 						air = RegisterNewSquad(SquadType.Air);
 
 					air.Units.Add(a);
-				}
-				else if (Info.UnitsCommonNames.NavalUnits.Contains(a.Info.Name))
-				{
-					var ships = GetSquadOfType(SquadType.Naval);
-					if (ships == null)
-						ships = RegisterNewSquad(SquadType.Naval);
-
-					ships.Units.Add(a);
 				}
 
 				activeUnits.Add(a);
@@ -927,16 +918,13 @@ namespace OpenRA.Mods.Common.AI
 		void SetRallyPointsForNewProductionBuildings(Actor self)
 		{
 			foreach (var rp in self.World.ActorsWithTrait<RallyPoint>())
-			{
 				if (rp.Actor.Owner == Player &&
 					!IsRallyPointValid(rp.Trait.Location, rp.Actor.Info.TraitInfoOrDefault<BuildingInfo>()))
-				{
-					QueueOrder(new Order("SetRallyPoint", rp.Actor, Target.FromCell(World, ChooseRallyLocationNear(rp.Actor)), false)
+					QueueOrder(new Order("SetRallyPoint", rp.Actor, false)
 					{
+						TargetLocation = ChooseRallyLocationNear(rp.Actor),
 						SuppressVisualFeedback = true
 					});
-				}
-			}
 		}
 
 		// Won't work for shipyards...
@@ -982,20 +970,16 @@ namespace OpenRA.Mods.Common.AI
 				if (!mcv.IsIdle)
 					continue;
 
-				// Don't try to move and deploy an undeployable actor
-				var transformsInfo = mcv.Info.TraitInfoOrDefault<TransformsInfo>();
-				if (transformsInfo == null)
-					continue;
-
 				// If we lack a base, we need to make sure we don't restrict deployment of the MCV to the base!
-				var restrictToBase = Info.RestrictMCVDeploymentFallbackToBase &&
+				var restrictToBase =
+					Info.RestrictMCVDeploymentFallbackToBase &&
 					CountBuildingByCommonName(Info.BuildingCommonNames.ConstructionYard, Player) > 0;
-
-				var desiredLocation = ChooseBuildLocation(transformsInfo.IntoActor, restrictToBase, BuildingType.Building);
+				var factType = mcv.Info.TraitInfo<TransformsInfo>().IntoActor;
+				var desiredLocation = ChooseBuildLocation(factType, restrictToBase, BuildingType.Building);
 				if (desiredLocation == null)
 					continue;
 
-				QueueOrder(new Order("Move", mcv, Target.FromCell(World, desiredLocation.Value), true));
+				QueueOrder(new Order("Move", mcv, true) { TargetLocation = desiredLocation.Value });
 				QueueOrder(new Order("DeployTransform", mcv, true));
 			}
 		}
@@ -1050,7 +1034,7 @@ namespace OpenRA.Mods.Common.AI
 					// Valid target found, delay by a few ticks to avoid rescanning before power fires via order
 					BotDebug("AI: {2} found new target location {0} for support power {1}.", attackLocation, sp.Info.OrderName, Player.PlayerName);
 					waitingPowers[sp] += 10;
-					QueueOrder(new Order(sp.Key, supportPowerMngr.Self, Target.FromCell(World, attackLocation.Value), false) { SuppressVisualFeedback = true });
+					QueueOrder(new Order(sp.Key, supportPowerMngr.Self, false) { TargetLocation = attackLocation.Value, SuppressVisualFeedback = true });
 				}
 			}
 		}
@@ -1202,7 +1186,7 @@ namespace OpenRA.Mods.Common.AI
 				{
 					BotDebug("Bot noticed damage {0} {1}->{2}, repairing.",
 						self, e.PreviousDamageState, e.DamageState);
-					QueueOrder(new Order("RepairBuilding", self.Owner.PlayerActor, Target.FromActor(self), false));
+					QueueOrder(new Order("RepairBuilding", self.Owner.PlayerActor, false) { TargetActor = self });
 				}
 			}
 

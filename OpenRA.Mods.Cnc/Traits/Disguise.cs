@@ -64,11 +64,7 @@ namespace OpenRA.Mods.Cnc.Traits
 	{
 		None = 0,
 		Attack = 1,
-		Damaged = 2,
-		Unload = 4,
-		Infiltrate = 8,
-		Demolish = 16,
-		Move = 32
+		Damaged = 2
 	}
 
 	[Desc("Provides access to the disguise command, which makes the actor appear to be another player's actor.")]
@@ -80,21 +76,13 @@ namespace OpenRA.Mods.Cnc.Traits
 		[Desc("The condition to grant to self while disguised.")]
 		public readonly string DisguisedCondition = null;
 
-		[Desc("What diplomatic stances can this actor disguise as.")]
-		public readonly Stance ValidStances = Stance.Ally | Stance.Neutral | Stance.Enemy;
-
-		[Desc("Target types of actors that this actor disguise as.")]
-		public readonly HashSet<string> TargetTypes = new HashSet<string> { "Disguise" };
-
-		[Desc("Triggers which cause the actor to drop it's disguise. Possible values: None, Attack, Damaged,",
-			"Unload, Infiltrate, Demolish, Move.")]
+		[Desc("Triggers which cause the actor to drop it's disguise. Possible values: None, Attack, Damaged.")]
 		public readonly RevealDisguiseType RevealDisguiseOn = RevealDisguiseType.Attack;
 
 		public object Create(ActorInitializer init) { return new Disguise(init.Self, this); }
 	}
 
-	class Disguise : INotifyCreated, IEffectiveOwner, IIssueOrder, IResolveOrder, IOrderVoice, IRadarColorModifier, INotifyAttack,
-		INotifyDamage, INotifyUnload, INotifyDemolition, INotifyInfiltration, ITick
+	class Disguise : INotifyCreated, IEffectiveOwner, IIssueOrder, IResolveOrder, IOrderVoice, IRadarColorModifier, INotifyAttack, INotifyDamage
 	{
 		public Player AsPlayer { get; private set; }
 		public string AsSprite { get; private set; }
@@ -108,7 +96,6 @@ namespace OpenRA.Mods.Cnc.Traits
 
 		ConditionManager conditionManager;
 		int disguisedToken = ConditionManager.InvalidConditionToken;
-		CPos? lastPos;
 
 		public Disguise(Actor self, DisguiseInfo info)
 		{
@@ -121,23 +108,23 @@ namespace OpenRA.Mods.Cnc.Traits
 			conditionManager = self.TraitOrDefault<ConditionManager>();
 		}
 
-		IEnumerable<IOrderTargeter> IIssueOrder.Orders
+		public IEnumerable<IOrderTargeter> Orders
 		{
 			get
 			{
-				yield return new DisguiseOrderTargeter(info);
+				yield return new TargetTypeOrderTargeter(new HashSet<string> { "Disguise" }, "Disguise", 7, "ability", true, true) { ForceAttack = false };
 			}
 		}
 
-		Order IIssueOrder.IssueOrder(Actor self, IOrderTargeter order, Target target, bool queued)
+		public Order IssueOrder(Actor self, IOrderTargeter order, Target target, bool queued)
 		{
 			if (order.OrderID == "Disguise")
-				return new Order(order.OrderID, self, target, queued);
+				return new Order(order.OrderID, self, queued) { TargetActor = target.Actor };
 
 			return null;
 		}
 
-		void IResolveOrder.ResolveOrder(Actor self, Order order)
+		public void ResolveOrder(Actor self, Order order)
 		{
 			if (order.OrderString == "Disguise")
 			{
@@ -146,12 +133,12 @@ namespace OpenRA.Mods.Cnc.Traits
 			}
 		}
 
-		string IOrderVoice.VoicePhraseForOrder(Actor self, Order order)
+		public string VoicePhraseForOrder(Actor self, Order order)
 		{
 			return order.OrderString == "Disguise" ? info.Voice : null;
 		}
 
-		Color IRadarColorModifier.RadarColorOverride(Actor self, Color color)
+		public Color RadarColorOverride(Actor self, Color color)
 		{
 			if (!Disguised || self.Owner.IsAlliedWith(self.World.RenderPlayer))
 				return color;
@@ -232,64 +219,6 @@ namespace OpenRA.Mods.Cnc.Traits
 		{
 			if (info.RevealDisguiseOn.HasFlag(RevealDisguiseType.Damaged) && e.Damage.Value > 0)
 				DisguiseAs(null);
-		}
-
-		void INotifyUnload.Unloading(Actor self)
-		{
-			if (info.RevealDisguiseOn.HasFlag(RevealDisguiseType.Unload))
-				DisguiseAs(null);
-		}
-
-		void INotifyDemolition.Demolishing(Actor self)
-		{
-			if (info.RevealDisguiseOn.HasFlag(RevealDisguiseType.Demolish))
-				DisguiseAs(null);
-		}
-
-		void INotifyInfiltration.Infiltrating(Actor self)
-		{
-			if (info.RevealDisguiseOn.HasFlag(RevealDisguiseType.Infiltrate))
-				DisguiseAs(null);
-		}
-
-		void ITick.Tick(Actor self)
-		{
-			if (info.RevealDisguiseOn.HasFlag(RevealDisguiseType.Move) && lastPos != null && lastPos.Value != self.Location)
-				DisguiseAs(null);
-
-			lastPos = self.Location;
-		}
-	}
-
-	class DisguiseOrderTargeter : UnitOrderTargeter
-	{
-		readonly DisguiseInfo info;
-
-		public DisguiseOrderTargeter(DisguiseInfo info)
-			: base("Disguise", 7, "ability", true, true)
-		{
-			this.info = info;
-			ForceAttack = false;
-		}
-
-		public override bool CanTargetActor(Actor self, Actor target, TargetModifiers modifiers, ref string cursor)
-		{
-			var stance = self.Owner.Stances[target.Owner];
-
-			if (!info.ValidStances.HasStance(stance))
-				return false;
-
-			return info.TargetTypes.Overlaps(target.GetAllTargetTypes());
-		}
-
-		public override bool CanTargetFrozenActor(Actor self, FrozenActor target, TargetModifiers modifiers, ref string cursor)
-		{
-			var stance = self.Owner.Stances[target.Owner];
-
-			if (!info.ValidStances.HasStance(stance))
-				return false;
-
-			return info.TargetTypes.Overlaps(target.Info.TraitInfos<ITargetableInfo>().SelectMany(ti => ti.GetTargetTypes()));
 		}
 	}
 }

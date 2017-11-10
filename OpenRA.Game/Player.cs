@@ -61,6 +61,7 @@ namespace OpenRA
 		public Shroud Shroud;
 		public World World { get; private set; }
 
+		readonly IFogVisibilityModifier[] fogVisibilities;
 		readonly StanceColors stanceColors;
 
 		static FactionInfo ChooseFaction(World world, string name, bool requireSelectable = true)
@@ -133,6 +134,8 @@ namespace OpenRA
 			PlayerActor = world.CreateActor("Player", new TypeDictionary { new OwnerInit(this) });
 			Shroud = PlayerActor.Trait<Shroud>();
 
+			fogVisibilities = PlayerActor.TraitsImplementing<IFogVisibilityModifier>().ToArray();
+
 			// Enable the bot logic on the host
 			IsBot = BotType != null;
 			if (IsBot && Game.IsHost)
@@ -160,6 +163,35 @@ namespace OpenRA
 		{
 			// Observers are considered allies to active combatants
 			return p == null || Stances[p] == Stance.Ally || (p.Spectating && !NonCombatant);
+		}
+
+		public bool CanViewActor(Actor a)
+		{
+			return a.CanBeViewedByPlayer(this);
+		}
+
+		public bool CanTargetActor(Actor a)
+		{
+			// PERF: Avoid LINQ.
+			if (HasFogVisibility)
+				foreach (var fogVisibility in fogVisibilities)
+					if (fogVisibility.IsVisible(a))
+						return true;
+
+			return CanViewActor(a);
+		}
+
+		public bool HasFogVisibility
+		{
+			get
+			{
+				// PERF: Avoid LINQ.
+				foreach (var fogVisibility in fogVisibilities)
+					if (fogVisibility.HasFogVisibility())
+						return true;
+
+				return false;
+			}
 		}
 
 		public Color PlayerStanceColor(Actor a)

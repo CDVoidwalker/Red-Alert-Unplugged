@@ -51,18 +51,33 @@ namespace OpenRA.Mods.Common.Traits
 			if (order.OrderID != "EngineerRepair")
 				return null;
 
-			return new Order(order.OrderID, self, target, queued);
+			if (target.Type == TargetType.FrozenActor)
+				return new Order(order.OrderID, self, queued) { ExtraData = target.FrozenActor.ID };
+
+			return new Order(order.OrderID, self, queued) { TargetActor = target.Actor };
 		}
 
 		static bool IsValidOrder(Actor self, Order order)
 		{
-			if (order.Target.Type == TargetType.FrozenActor)
-				return order.Target.FrozenActor.DamageState > DamageState.Undamaged;
+			// Not targeting a frozen actor
+			if (order.ExtraData == 0 && order.TargetActor == null)
+				return false;
 
-			if (order.Target.Type == TargetType.Actor)
-				return order.TargetActor.GetDamageState() > DamageState.Undamaged;
+			if (order.ExtraData != 0)
+			{
+				// Targeted an actor under the fog
+				var frozenLayer = self.Owner.PlayerActor.TraitOrDefault<FrozenActorLayer>();
+				if (frozenLayer == null)
+					return false;
 
-			return false;
+				var frozen = frozenLayer.FromID(order.ExtraData);
+				if (frozen == null)
+					return false;
+
+				return frozen.DamageState > DamageState.Undamaged;
+			}
+
+			return order.TargetActor.GetDamageState() > DamageState.Undamaged;
 		}
 
 		public string VoicePhraseForOrder(Actor self, Order order)

@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using OpenRA.Graphics;
-using OpenRA.Mods.Common.Lint;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Network;
 using OpenRA.Traits;
@@ -22,40 +21,30 @@ using OpenRA.Widgets;
 
 namespace OpenRA.Mods.Common.Widgets.Logic
 {
-	public enum ObserverStatsPanel { Basic, Economy, Production, Combat, Graph }
-
-	[ChromeLogicArgsHotkeys("StatisticsBasicKey", "StatisticsEconomyKey", "StatisticsProductionKey", "StatisticsCombatKey", "StatisticsGraphKey")]
 	public class ObserverStatsLogic : ChromeLogic
 	{
-		readonly ContainerWidget basicStatsHeaders;
-		readonly ContainerWidget economyStatsHeaders;
-		readonly ContainerWidget productionStatsHeaders;
-		readonly ContainerWidget combatStatsHeaders;
-		readonly ContainerWidget earnedThisMinuteGraphHeaders;
-		readonly ScrollPanelWidget playerStatsPanel;
-		readonly ScrollItemWidget basicPlayerTemplate;
-		readonly ScrollItemWidget economyPlayerTemplate;
-		readonly ScrollItemWidget productionPlayerTemplate;
-		readonly ScrollItemWidget combatPlayerTemplate;
-		readonly ContainerWidget earnedThisMinuteGraphTemplate;
-		readonly ScrollItemWidget teamTemplate;
-		readonly IEnumerable<Player> players;
-		readonly World world;
-		readonly WorldRenderer worldRenderer;
+		ContainerWidget basicStatsHeaders;
+		ContainerWidget economyStatsHeaders;
+		ContainerWidget productionStatsHeaders;
+		ContainerWidget combatStatsHeaders;
+		ContainerWidget earnedThisMinuteGraphHeaders;
+		ScrollPanelWidget playerStatsPanel;
+		ScrollItemWidget basicPlayerTemplate;
+		ScrollItemWidget economyPlayerTemplate;
+		ScrollItemWidget productionPlayerTemplate;
+		ScrollItemWidget combatPlayerTemplate;
+		ContainerWidget earnedThisMinuteGraphTemplate;
+		ScrollItemWidget teamTemplate;
+		DropDownButtonWidget statsDropDown;
+		IEnumerable<Player> players;
+		World world;
+		WorldRenderer worldRenderer;
 
 		[ObjectCreator.UseCtor]
-		public ObserverStatsLogic(World world, WorldRenderer worldRenderer, Widget widget, Action onExit, ObserverStatsPanel activePanel, Dictionary<string, MiniYaml> logicArgs)
+		public ObserverStatsLogic(World world, WorldRenderer worldRenderer, Widget widget, Action onExit)
 		{
 			this.world = world;
 			this.worldRenderer = worldRenderer;
-
-			MiniYaml yaml;
-			var ks = Game.Settings.Keys;
-			string[] keyNames = Enum.GetNames(typeof(ObserverStatsPanel));
-			var statsHotkeys = new NamedHotkey[keyNames.Length];
-			for (var i = 0; i < keyNames.Length; i++)
-				statsHotkeys[i] = logicArgs.TryGetValue("Statistics" + keyNames[i] + "Key", out yaml) ? new NamedHotkey(yaml.Value, ks) : new NamedHotkey();
-
 			players = world.Players.Where(p => !p.NonCombatant);
 
 			basicStatsHeaders = widget.Get<ContainerWidget>("BASIC_STATS_HEADERS");
@@ -75,40 +64,79 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 
 			teamTemplate = playerStatsPanel.Get<ScrollItemWidget>("TEAM_TEMPLATE");
 
-			var statsDropDown = widget.Get<DropDownButtonWidget>("STATS_DROPDOWN");
-			Func<string, ContainerWidget, Action, StatsDropDownOption> createStatsOption = (title, headers, a) =>
+			statsDropDown = widget.Get<DropDownButtonWidget>("STATS_DROPDOWN");
+			statsDropDown.GetText = () => "Basic";
+			statsDropDown.OnMouseDown = _ =>
 			{
-				return new StatsDropDownOption
+				var options = new List<StatsDropDownOption>
 				{
-					Title = title,
-					IsSelected = () => headers.Visible,
-					OnClick = () =>
+					new StatsDropDownOption
 					{
-						ClearStats();
-						statsDropDown.GetText = () => title;
-						a();
+						Title = "Basic",
+						IsSelected = () => basicStatsHeaders.Visible,
+						OnClick = () =>
+						{
+							ClearStats();
+							statsDropDown.GetText = () => "Basic";
+							DisplayStats(BasicStats);
+						}
+					},
+					new StatsDropDownOption
+					{
+						Title = "Economy",
+						IsSelected = () => economyStatsHeaders.Visible,
+						OnClick = () =>
+						{
+							ClearStats();
+							statsDropDown.GetText = () => "Economy";
+							DisplayStats(EconomyStats);
+						}
+					},
+					new StatsDropDownOption
+					{
+						Title = "Production",
+						IsSelected = () => productionStatsHeaders.Visible,
+						OnClick = () =>
+						{
+							ClearStats();
+							statsDropDown.GetText = () => "Production";
+							DisplayStats(ProductionStats);
+						}
+					},
+					new StatsDropDownOption
+					{
+						Title = "Combat",
+						IsSelected = () => combatStatsHeaders.Visible,
+						OnClick = () =>
+						{
+							ClearStats();
+							statsDropDown.GetText = () => "Combat";
+							DisplayStats(CombatStats);
+						}
+					},
+					new StatsDropDownOption
+					{
+						Title = "Earnings (graph)",
+						IsSelected = () => earnedThisMinuteGraphHeaders.Visible,
+						OnClick = () =>
+						{
+							ClearStats();
+							statsDropDown.GetText = () => "Earnings (graph)";
+							EarnedThisMinuteGraph();
+						}
 					}
 				};
+				Func<StatsDropDownOption, ScrollItemWidget, ScrollItemWidget> setupItem = (option, template) =>
+				{
+					var item = ScrollItemWidget.Setup(template, option.IsSelected, option.OnClick);
+					item.Get<LabelWidget>("LABEL").GetText = () => option.Title;
+					return item;
+				};
+				statsDropDown.ShowDropDown("LABEL_DROPDOWN_TEMPLATE", 150, options, setupItem);
 			};
 
-			var statsDropDownOptions = new StatsDropDownOption[]
-			{
-				createStatsOption("Basic", basicStatsHeaders, () => DisplayStats(BasicStats)),
-				createStatsOption("Economy", economyStatsHeaders, () => DisplayStats(EconomyStats)),
-				createStatsOption("Production", productionStatsHeaders, () => DisplayStats(ProductionStats)),
-				createStatsOption("Combat", combatStatsHeaders, () => DisplayStats(CombatStats)),
-				createStatsOption("Earnings (graph)", earnedThisMinuteGraphHeaders, () => EarnedThisMinuteGraph())
-			};
-
-			Func<StatsDropDownOption, ScrollItemWidget, ScrollItemWidget> setupItem = (option, template) =>
-			{
-				var item = ScrollItemWidget.Setup(template, option.IsSelected, option.OnClick);
-				item.Get<LabelWidget>("LABEL").GetText = () => option.Title;
-				return item;
-			};
-
-			statsDropDown.OnMouseDown = _ => statsDropDown.ShowDropDown("LABEL_DROPDOWN_TEMPLATE", 150, statsDropDownOptions, setupItem);
-			statsDropDownOptions[(int)activePanel].OnClick();
+			ClearStats();
+			DisplayStats(BasicStats);
 
 			var close = widget.GetOrNull<ButtonWidget>("CLOSE");
 			if (close != null)
@@ -118,25 +146,6 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 					Ui.Root.RemoveChild(widget);
 					onExit();
 				};
-
-			var keyListener = statsDropDown.Get<LogicKeyListenerWidget>("STATS_DROPDOWN_KEYHANDLER");
-			keyListener.AddHandler(e =>
-			{
-				if (e.Event == KeyInputEvent.Down && !e.IsRepeat)
-				{
-					var key = Hotkey.FromKeyInput(e);
-					for (var i = 0; i < statsHotkeys.Length; i++)
-					{
-						if (key == statsHotkeys[i].GetValue())
-						{
-							statsDropDownOptions[i].OnClick();
-							return true;
-						}
-					}
-				}
-
-				return false;
-			});
 		}
 
 		void ClearStats()

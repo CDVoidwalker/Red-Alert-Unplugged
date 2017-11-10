@@ -1,7 +1,7 @@
 E2:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 20
@@ -72,7 +72,7 @@ MEDIC:
 JUMPJET:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -149,8 +149,6 @@ JUMPJET:
 		RequiresCondition: !airborne
 	SpawnActorOnDeath@FLAMEGUY:
 		RequiresCondition: !airborne
-	WithShadow@airborne:
-		RequiresCondition: airborne
 
 JUMPJET.Husk:
 	RenderSprites:
@@ -168,7 +166,6 @@ JUMPJET.Husk:
 	Aircraft:
 		Speed: 186
 		CanHover: True
-		VTOL: true
 	RenderSprites:
 		Image: jumpjet
 	AutoSelectionSize:
@@ -193,7 +190,7 @@ GHOST:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@2: ^HealsOnTiberium
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGround
 	Valued:
 		Cost: 1750
 	Tooltip:

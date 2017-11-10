@@ -73,7 +73,7 @@ namespace OpenRA.Mods.Common.Traits
 			return info.Tilesets.Contains(tilesetId) && !info.ExcludeTilesets.Contains(tilesetId);
 		}
 
-		void ITick.Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (!validTileset)
 				return;

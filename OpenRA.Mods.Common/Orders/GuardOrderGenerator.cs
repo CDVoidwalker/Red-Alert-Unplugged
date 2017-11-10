@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Orders;
-using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Orders
 {
@@ -32,11 +31,9 @@ namespace OpenRA.Mods.Common.Orders
 				yield break;
 
 			world.CancelInputMode();
-
-			var queued = mi.Modifiers.HasModifier(Modifiers.Shift);
 			foreach (var subject in Subjects)
 				if (subject != target)
-					yield return new Order(OrderName, subject, Target.FromActor(target), queued);
+					yield return new Order(OrderName, subject, false) { TargetActor = target };
 		}
 
 		public override void Tick(World world)
@@ -60,10 +57,9 @@ namespace OpenRA.Mods.Common.Orders
 		static IEnumerable<Actor> FriendlyGuardableUnits(World world, MouseInput mi)
 		{
 			return world.ScreenMap.ActorsAt(mi)
-				.Where(a => !a.IsDead &&
+				.Where(a => !world.FogObscures(a) && !a.IsDead &&
 					a.AppearsFriendlyTo(world.LocalPlayer.PlayerActor) &&
-					a.Info.HasTraitInfo<GuardableInfo>() &&
-					!world.FogObscures(a));
+					a.Info.HasTraitInfo<GuardableInfo>());
 		}
 	}
 }

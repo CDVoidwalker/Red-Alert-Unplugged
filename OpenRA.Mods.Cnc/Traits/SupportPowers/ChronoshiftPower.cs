@@ -157,7 +157,7 @@ namespace OpenRA.Mods.Cnc.Traits
 				var targetUnits = power.UnitsInRange(xy).Where(a => !world.FogObscures(a));
 
 				foreach (var unit in targetUnits)
-					if (unit.CanBeViewedByPlayer(manager.Self.Owner))
+					if (manager.Self.Owner.CanTargetActor(unit))
 						yield return new SelectionBoxRenderable(unit, Color.Red);
 			}
 
@@ -221,8 +221,9 @@ namespace OpenRA.Mods.Cnc.Traits
 			{
 				// Cannot chronoshift into unexplored location
 				if (IsValidTarget(xy))
-					yield return new Order(order, manager.Self, Target.FromCell(manager.Self.World, xy), false)
+					yield return new Order(order, manager.Self, false)
 					{
+						TargetLocation = xy,
 						ExtraLocation = sourceLocation,
 						SuppressVisualFeedback = true
 					};
@@ -250,7 +251,7 @@ namespace OpenRA.Mods.Cnc.Traits
 				// Unit previews
 				foreach (var unit in power.UnitsInRange(sourceLocation))
 				{
-					if (unit.CanBeViewedByPlayer(manager.Self.Owner))
+					if (manager.Self.Owner.CanTargetActor(unit))
 					{
 						var targetCell = unit.Location + (xy - sourceLocation);
 						var canEnter = manager.Self.Owner.Shroud.IsExplored(targetCell) &&
@@ -260,13 +261,13 @@ namespace OpenRA.Mods.Cnc.Traits
 					}
 
 					var offset = world.Map.CenterOfCell(xy) - world.Map.CenterOfCell(sourceLocation);
-					if (unit.CanBeViewedByPlayer(manager.Self.Owner))
+					if (manager.Self.Owner.CanTargetActor(unit))
 						foreach (var r in unit.Render(wr))
 							yield return r.OffsetBy(offset);
 				}
 
 				foreach (var unit in power.UnitsInRange(sourceLocation))
-					if (unit.CanBeViewedByPlayer(manager.Self.Owner))
+					if (manager.Self.Owner.CanTargetActor(unit))
 						yield return new SelectionBoxRenderable(unit, Color.Red);
 			}
 

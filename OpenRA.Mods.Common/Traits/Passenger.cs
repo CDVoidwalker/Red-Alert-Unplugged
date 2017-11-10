@@ -66,7 +66,7 @@ namespace OpenRA.Mods.Common.Traits
 		public Order IssueOrder(Actor self, IOrderTargeter order, Target target, bool queued)
 		{
 			if (order.OrderID == "EnterTransport" || order.OrderID == "EnterTransports")
-				return new Order(order.OrderID, self, target, queued);
+				return new Order(order.OrderID, self, queued) { TargetActor = target.Actor };
 
 			return null;
 		}
@@ -120,8 +120,7 @@ namespace OpenRA.Mods.Common.Traits
 			return true;
 		}
 
-		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self) { Unreserve(self); }
-
+		public void RemovedFromWorld(Actor self) { Unreserve(self); }
 		public void Unreserve(Actor self)
 		{
 			if (ReservedCargo == null)

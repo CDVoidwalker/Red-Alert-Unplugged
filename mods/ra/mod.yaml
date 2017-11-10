@@ -1,6 +1,6 @@
 Metadata:
 	Title: Red Alert
-	Version: {SHOWCASE}
+	Version: {Showcase version}
 
 PackageFormats: Mix
 
@@ -34,7 +34,7 @@ Packages:
 
 MapFolders:
 	ra|maps: System
-	~^maps/ra/{SHOWCASE}: User
+	~^maps/ra/{Showcase version}: User
 
 Rules:
 	ra|rules/misc.yaml
@@ -93,14 +93,13 @@ ChromeLayout:
 	ra|chrome/ingame-player.yaml
 	common|chrome/ingame-perf.yaml
 	common|chrome/ingame-debug.yaml
-	common|chrome/ingame-infochat.yaml
 	common|chrome/mainmenu.yaml
 	common|chrome/settings.yaml
 	common|chrome/credits.yaml
 	common|chrome/lobby.yaml
 	common|chrome/lobby-mappreview.yaml
 	common|chrome/lobby-players.yaml
-	ra|chrome/lobby-options.yaml
+	common|chrome/lobby-options.yaml
 	common|chrome/lobby-music.yaml
 	common|chrome/lobby-kickdialogs.yaml
 	common|chrome/lobby-globalchat.yaml

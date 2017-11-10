@@ -23,17 +23,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Prevent the ally build radius state from being changed in the lobby.")]
 		public readonly bool AllyBuildRadiusLocked = false;
 
-		[Desc("Default value of the build radius checkbox in the lobby.")]
-		public readonly bool BuildRadiusEnabled = true;
-
-		[Desc("Prevent the build radius state from being changed in the lobby.")]
-		public readonly bool BuildRadiusLocked = false;
-
 		IEnumerable<LobbyOption> ILobbyOptions.LobbyOptions(Ruleset rules)
 		{
 			yield return new LobbyBooleanOption("allybuild", "Build off Allies' ConYards", AllyBuildRadiusEnabled, AllyBuildRadiusLocked);
-
-			yield return new LobbyBooleanOption("buildradius", "Limit ConYard Area", BuildRadiusEnabled, BuildRadiusLocked);
 		}
 
 		public object Create(ActorInitializer init) { return new MapBuildRadius(this); }
@@ -43,7 +35,6 @@ namespace OpenRA.Mods.Common.Traits
 	{
 		readonly MapBuildRadiusInfo info;
 		public bool AllyBuildRadiusEnabled { get; private set; }
-		public bool BuildRadiusEnabled { get; private set; }
 
 		public MapBuildRadius(MapBuildRadiusInfo info)
 		{
@@ -54,8 +45,6 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			AllyBuildRadiusEnabled = self.World.LobbyInfo.GlobalSettings
 				.OptionOrDefault("allybuild", info.AllyBuildRadiusEnabled);
-			BuildRadiusEnabled = self.World.LobbyInfo.GlobalSettings
-				.OptionOrDefault("buildradius", info.BuildRadiusEnabled);
 		}
 	}
 }

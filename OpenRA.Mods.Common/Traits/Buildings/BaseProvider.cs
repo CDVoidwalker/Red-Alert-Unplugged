@@ -32,13 +32,12 @@ namespace OpenRA.Mods.Common.Traits
 		public readonly BaseProviderInfo Info;
 		readonly DeveloperMode devMode;
 		readonly Actor self;
-		readonly bool allyBuildEnabled;
-		readonly bool buildRadiusEnabled;
 
 		Building building;
 
 		int total;
 		int progress;
+		bool allyBuildEnabled;
 
 		public BaseProvider(Actor self, BaseProviderInfo info)
 		{
@@ -46,9 +45,7 @@ namespace OpenRA.Mods.Common.Traits
 			this.self = self;
 			devMode = self.Owner.PlayerActor.Trait<DeveloperMode>();
 			progress = total = info.InitialDelay;
-			var mapBuildRadius = self.World.WorldActor.Trait<MapBuildRadius>();
-			allyBuildEnabled = mapBuildRadius.AllyBuildRadiusEnabled;
-			buildRadiusEnabled = mapBuildRadius.BuildRadiusEnabled;
+			allyBuildEnabled = self.World.WorldActor.Trait<MapBuildRadius>().AllyBuildRadiusEnabled;
 		}
 
 		void INotifyCreated.Created(Actor self)
@@ -77,7 +74,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		bool ValidRenderPlayer()
 		{
-			return buildRadiusEnabled && (self.Owner == self.World.RenderPlayer || (allyBuildEnabled && self.Owner.IsAlliedWith(self.World.RenderPlayer)));
+			return self.Owner == self.World.RenderPlayer || (allyBuildEnabled && self.Owner.IsAlliedWith(self.World.RenderPlayer));
 		}
 
 		public IEnumerable<IRenderable> RangeCircleRenderables(WorldRenderer wr)
