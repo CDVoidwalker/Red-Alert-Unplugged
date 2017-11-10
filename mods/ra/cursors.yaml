@@ -227,7 +227,4 @@ Cursors:
 		assaultmove-minimap:
 			Start: 12
 			Length: 4
-		assaultmove-blocked:
-			Start: 17
-		assaultmove-blocked-minimap:
-			Start: 19
+			
