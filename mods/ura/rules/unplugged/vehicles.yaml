@@ -1,0 +1,35 @@
+V2RL:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+1TNK:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+2TNK:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+3TNK:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+4TNK:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+ARTY:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+JEEP:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+APC:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+TTNK:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+FTRK:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+CTNK:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+STNK:
+	Inherits@AUTOTARGET: ^AutoTargetGround

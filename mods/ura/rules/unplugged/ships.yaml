@@ -1,0 +1,14 @@
+SS:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+MSUB:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+DD:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+CA:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+PT:
+	Inherits@AUTOTARGET: ^AutoTargetGround
