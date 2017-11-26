@@ -1,0 +1,11 @@
+MIG:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+YAK:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+HELI:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	
+HIND:
+	Inherits@AUTOTARGET: ^AutoTargetGround

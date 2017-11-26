@@ -1,0 +1,26 @@
+E1:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+E2:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+E3:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+E4:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+SPY:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+E7:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+SHOK:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+Zombie:
+	Inherits@AUTOTARGET: ^AutoTargetGround
+
+Ant:
+	Inherits@AUTOTARGET: ^AutoTargetGround

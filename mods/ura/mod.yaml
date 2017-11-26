@@ -53,6 +53,13 @@ Rules:
 	ura|rules/ships.yaml
 	ura|rules/fakes.yaml
 
+	#RA Unplugged override rules
+	ura|rules/unplugged/aircraft.yaml
+	ura|rules/unplugged/defaults.yaml
+	ura|rules/unplugged/infantry.yaml
+	ura|rules/unplugged/ships.yaml
+	ura|rules/unplugged/vehicles.yaml
+
 Sequences:
 	ura|sequences/ships.yaml
 	ura|sequences/vehicles.yaml
