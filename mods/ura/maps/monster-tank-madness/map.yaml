@@ -1,6 +1,6 @@
 MapFormat: 11
 
-RequiresMod: ra
+RequiresMod: ura
 
 Title: Monster Tank Madness
 
@@ -2087,7 +2087,7 @@ Actors:
 		Location: 65,78
 		Owner: Neutral
 
-Rules: ra|rules/campaign-rules.yaml, ra|rules/campaign-tooltips.yaml, rules.yaml
+Rules: ura|rules/unplugged/campaign-rules.yaml, ura|rules/campaign-tooltips.yaml, rules.yaml
 
 Weapons: weapons.yaml
 

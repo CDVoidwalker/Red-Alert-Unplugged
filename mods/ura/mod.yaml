@@ -34,7 +34,7 @@ Packages:
 
 MapFolders:
 	ura|maps: System
-	~^maps/ra/release-20171014: User
+	~^maps/ura/0.01: User
 
 Rules:
 	ura|rules/misc.yaml
@@ -187,7 +187,7 @@ MapGrid:
 	TileSize: 24,24
 	Type: Rectangular
 
-SupportsMapsFrom: ra
+SupportsMapsFrom: ura, ra
 
 SoundFormats: Aud, Wav
 
