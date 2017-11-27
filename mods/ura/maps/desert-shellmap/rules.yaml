@@ -13,6 +13,11 @@ World:
 	LuaScript:
 		Scripts: desert-shellmap.lua
 	-StartGameNotification:
+	GlobalLightingPaletteEffect:
+		Red: 1.1
+		Green: 0.92
+		Blue: 1.05
+		Ambient: 0.8
 
 ^Vehicle:
 	GivesBounty:
