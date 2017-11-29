@@ -59,6 +59,7 @@ Rules:
 	ura|rules/unplugged/infantry.yaml
 	ura|rules/unplugged/ships.yaml
 	ura|rules/unplugged/vehicles.yaml
+	ura|rules/unplugged/world.yaml
 
 Sequences:
 	ura|sequences/ships.yaml
