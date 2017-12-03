@@ -23,6 +23,14 @@ Maverick:
 		Versus: 
 			Heavy: 115
 
+SubMissile:
+	Projectile: Bullet
+		Inaccuracy: 1c512
+
+8Inch:
+	Range: 18c0
+	Inaccuracy: 2c512
+
 SilencedPPK:	
 	Range: 4c0
 

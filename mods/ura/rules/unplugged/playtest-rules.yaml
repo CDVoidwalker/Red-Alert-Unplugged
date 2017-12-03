@@ -101,6 +101,10 @@ MIG:
 
 # UNITS - SHIPS
 
+SS:
+	RevealsShroud:
+		Range: 8c0
+
 LST:
 	Cargo:
 		MaxWeight: 15
@@ -120,5 +124,9 @@ SYRD:
 # DEFENSIVE STRUCTURES
 
 # FAKE STRUCTURES
+
+^FakeBuilding:
+	Explodes:
+		DamageThreshold: 80
 
 # CIVILIAN STRUCTURES
