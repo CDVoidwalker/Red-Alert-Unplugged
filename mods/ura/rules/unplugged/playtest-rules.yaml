@@ -1,0 +1,112 @@
+#   Companion playtest .yaml files:
+#
+#   Rules: ura|rules/unplugged/playtest-rules.yaml
+#   Weapons: ura|weapons/unplugged/playtest-weapons.yaml
+#   Sequences: ura|sequences/unplugged/playtest-sequences.yaml
+
+
+
+# Playtest version: 1.7 - Rules
+
+World:
+	MissionData:
+		Briefing: Map contain preliminary values for uRA Playtest 1.7\nAll changes listed up at:\nhttps://github.com/SoScared/Red-Alert-Unplugged/wiki/Game-Balance\n
+
+# UNITS - INFANTRY
+
+SPY:
+	Valued:
+		Cost: 400
+
+SPY.England:
+	Valued:
+		Cost: 400
+	GivesExperience:
+		Experience: 400
+	Health:
+		HP: 35
+	Mobile:
+		Speed: 63
+	ProducibleWithLevel:
+		Prerequisites: techlevel.infonly
+		InitialLevels: 1
+
+# UNITS - VEHICLES
+
+1TNK:
+	RevealOnDeath:
+		Duration: 80
+		Radius: 2c512
+
+2TNK:
+	RevealOnDeath:
+		Duration: 80
+		Radius: 2c512
+
+3TNK:
+	RevealOnDeath:
+		Duration: 80
+		Radius: 2c512
+
+4TNK:
+	RevealOnDeath:
+		Duration: 80
+		Radius: 2c512
+	RevealsShroud:
+		Range: 6c0
+
+HARV:
+	RevealOnDeath:
+		Duration: 80
+		Radius: 2c512
+
+MCV:
+	RevealOnDeath:
+		Duration: 80
+		Radius: 2c512
+
+STNK:
+	DetectCloaked:
+		Range: 6c0	
+
+^Vehicle:
+	Passenger:
+		Weight: 3
+
+# UNITS - AIRCRAFT
+
+MIG:
+	Health:
+		HP: 80
+
+^PlaneHusk:
+	RevealOnDeath:
+		Duration: 80
+
+^HelicopterHusk:
+	RevealOnDeath:
+		Duration: 80
+
+# UNITS - SHIPS
+
+LST:
+	Cargo:
+		MaxWeight: 15
+
+# STRUCTURES
+
+SPEN:
+	DetectCloaked: 
+		CloakTypes: Underwater
+		Range: 8c0
+
+SYRD:
+	DetectCloaked: 
+		CloakTypes: Underwater
+		Range: 8c0
+
+# DEFENSIVE STRUCTURES
+
+# FAKE STRUCTURES
+
+# CIVILIAN STRUCTURES
