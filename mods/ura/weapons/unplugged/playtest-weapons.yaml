@@ -6,7 +6,7 @@
 
 
 
-# Playtest version: 1.7 - Weapons
+# Playtest version: 1.7.1 - Weapons
 
 25mm:
 	Warhead@1Dam: SpreadDamage
@@ -25,3 +25,38 @@ Maverick:
 
 SilencedPPK:	
 	Range: 4c0
+
+MADTankThump:
+	InvalidTargets: MADTank
+	Warhead@1Dam: HealthPercentageDamage
+		Spread: 18c0
+		Damage: 1
+		Versus:
+			None: 200
+			Wood: 75
+			Light: 60
+			Heavy: 40
+		InvalidTargets: MADTank
+		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
+	Warhead@2Dam: HealthPercentageDamage
+		Spread: 10c0
+		Damage: 1
+		Versus:
+			None: 200
+			Wood: 45
+			Light: 45
+			Heavy: 30
+		InvalidTargets: MADTank
+		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
+		
+MADTankDetonate:
+	InvalidTargets: MADTank, Infantry
+	Warhead@1Dam: HealthPercentageDamage
+		Spread: 6c0
+		Damage: 5
+		Versus:
+			Concrete: 1000
+		InvalidTargets: MADTank, Infantry
+		DamageTypes: Prone50Percent, TriggerProne, DefaultDeath
+	Warhead@2Smu: LeaveSmudge
+		Size: 10,9

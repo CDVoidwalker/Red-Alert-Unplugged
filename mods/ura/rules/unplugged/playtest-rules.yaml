@@ -6,11 +6,11 @@
 
 
 
-# Playtest version: 1.7 - Rules
+# Playtest version: 1.7.1 - Rules
 
 World:
 	MissionData:
-		Briefing: Map contain preliminary values for uRA Playtest 1.7\nAll changes listed up at:\nhttps://github.com/SoScared/Red-Alert-Unplugged/wiki/Game-Balance\n
+		Briefing: Map contain preliminary values for uRA Playtest 1.7.1\n\nAll changes listed up at:\nhttps://github.com/SoScared/Red-Alert-Unplugged/wiki/Game-Balance\n
 
 # UNITS - INFANTRY
 
@@ -68,6 +68,18 @@ MCV:
 STNK:
 	DetectCloaked:
 		Range: 6c0	
+
+QTNK:
+	Valued:
+		Cost: 2200
+	Buildable:
+		BuildDuration: 1917
+	Health:
+		HP: 700
+	MadTank:
+		ChargeDelay: 192
+	KillsSelf:
+		RequiresCondition: invulnerability
 
 ^Vehicle:
 	Passenger:
