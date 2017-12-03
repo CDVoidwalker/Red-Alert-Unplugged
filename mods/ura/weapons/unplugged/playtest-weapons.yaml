@@ -1,0 +1,27 @@
+#   Companion playtest .yaml files:
+#
+#   Rules: ura|rules/unplugged/playtest-rules.yaml
+#   Weapons: ura|weapons/unplugged/playtest-weapons.yaml
+#   Sequences: ura|sequences/unplugged/playtest-sequences.yaml
+
+
+
+# Playtest version: 1.7 - Weapons
+
+25mm:
+	Warhead@1Dam: SpreadDamage
+		Damage: 30
+
+155mm:
+	MinRange: 4c0
+
+SCUD:
+	MinRange: 4c0
+
+Maverick: 
+	Warhead@1Dam: SpreadDamage
+		Versus: 
+			Heavy: 115
+
+SilencedPPK:	
+	Range: 4c0
