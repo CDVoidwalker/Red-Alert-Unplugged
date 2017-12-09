@@ -5,7 +5,7 @@ E2:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 
 E3:
-	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@AUTOTARGET: ^AutoTargetAll
 
 E4:
 	Inherits@AUTOTARGET: ^AutoTargetGround
