@@ -2,10 +2,10 @@ SS:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 
 MSUB:
-	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@AUTOTARGET: ^AutoTargetAll
 
 DD:
-	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@AUTOTARGET: ^AutoTargetAll
 
 CA:
 	Inherits@AUTOTARGET: ^AutoTargetGround

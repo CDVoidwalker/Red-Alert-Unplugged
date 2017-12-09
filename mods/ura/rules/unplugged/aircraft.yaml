@@ -5,7 +5,7 @@ YAK:
 	Inherits@AUTOTARGET: ^AutoTargetGround
 
 HELI:
-	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@AUTOTARGET: ^AutoTargetAll
 	
 HIND:
 	Inherits@AUTOTARGET: ^AutoTargetGround
