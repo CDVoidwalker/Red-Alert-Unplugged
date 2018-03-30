@@ -739,6 +739,8 @@ QTNK:
 	MadTank:
 	Targetable:
 		TargetTypes: Ground, MADTank, Repair, Vehicle
+	KillsSelf:
+		RequiresCondition: invulnerability
 
 STNK:
 	Inherits: ^Vehicle
